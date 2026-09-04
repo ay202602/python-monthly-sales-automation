@@ -12,9 +12,6 @@ def data_process() -> dict[str, pd.DataFrame]:
     RAW_PATH = "raw"
     RAW_DATA = "monthly_sales_dummy_data.xlsx"
 
-
-def data_process() -> None:
-    """データを取引先ごとにグルーピング、売り上げを計算"""
     sheets_dict = pd.read_excel(FILE_PATH / RAW_PATH / RAW_DATA, sheet_name=None)
 
     # dict[シート名, DataFrame(行・列を含むデータ全体)]
