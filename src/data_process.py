@@ -73,8 +73,9 @@ def save_excel(workbooks: dict[str, px.Workbook]) -> None:
 
 
 def main() -> None:
-    data_process()
-    cell_decoration()
+    processed = data_process()
+    workbooks = cell_decoration(processed)
+    save_excel(workbooks)
 
 
 if __name__ == "__main__":
