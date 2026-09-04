@@ -4,8 +4,11 @@ from pathlib import Path
 
 FILE_PATH = Path(__file__).resolve().parents[1] / "data"
 
-RAW_PATH = "raw"
-RAW_DATA = "monthly_sales_dummy_data.xlsx"
+
+def data_process() -> dict[str, pd.DataFrame]:
+    """データを取引先ごとにグルーピング、売り上げを計算"""
+    RAW_PATH = "raw"
+    RAW_DATA = "monthly_sales_dummy_data.xlsx"
 
 
 def data_process() -> None:
