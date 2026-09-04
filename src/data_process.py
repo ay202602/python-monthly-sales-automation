@@ -3,6 +3,7 @@ import openpyxl as px
 import unicodedata
 from openpyxl.styles import PatternFill, Border, Side
 from openpyxl.utils.dataframe import dataframe_to_rows
+from openpyxl.utils import get_column_letter
 from pathlib import Path
 
 FILE_PATH = Path(__file__).resolve().parents[1] / "data"
@@ -65,7 +66,26 @@ def cell_decoration(processed: dict[str, pd.DataFrame]) -> dict[str, px.Workbook
         ):
             for cell in row:
                 cell.border = grid_border
-
+        
+        # 会計の書式設定（Excelから引用）
+        ACCOUNTING_FORMAT = '_ ¥* #,##0_ ;_ ¥* -#,##0_ ;_ ¥* "-"_ ;_ @_ '
+        for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=ws.max_column):
+            for cell in row:
+                if isinstance(cell.value, (int, float)):
+                    cell.number_format = ACCOUNTING_FORMAT
+        
+        for col_idx, col_cells in enumerate(ws.iter_cols(min_row=1, max_row=ws.max_row), start=1):
+            max_length = 0
+            for cell in col_cells:
+                if cell.value is None:
+                    continue
+                if isinstance(cell.value, (int,float)):
+                    display_text = f"{cell.value:,.0f}"
+                else:
+                    display_text = str(cell.value)
+                max_length = max(max_length, display_width(display_text))
+            ws.column_dimensions[get_column_letter(col_idx)].width = max_length + 2
+        
         workbooks[sheet_name] = wb
 
     return workbooks
