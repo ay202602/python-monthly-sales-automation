@@ -41,9 +41,11 @@ def display_width(text: str) ->int:
 
 def cell_decoration(processed: dict[str, pd.DataFrame]) -> dict[str, px.Workbook]:
     """加工済みのデータをExcelに装飾"""
+    # DDEBF7 = 薄い青色
     header_fill = PatternFill(
         fill_type="solid", start_color="DDEBF7", end_color="DDEBF7"
     )
+    # 格子罫線
     thin = Side(style="thin", color="000000")
     grid_border = Border(left=thin, right=thin, top=thin, bottom=thin)
 
@@ -58,6 +60,7 @@ def cell_decoration(processed: dict[str, pd.DataFrame]) -> dict[str, px.Workbook
         for row in dataframe_to_rows(df, index=False, header=True):
             ws.append(row)
 
+        # ws[1] = セル1行目全体
         for cell in ws[1]:
             cell.fill = header_fill
 
