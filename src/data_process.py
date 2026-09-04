@@ -1,5 +1,6 @@
 import pandas as pd
 import openpyxl as px
+import unicodedata
 from openpyxl.styles import PatternFill, Border, Side
 from openpyxl.utils.dataframe import dataframe_to_rows
 from pathlib import Path
@@ -24,6 +25,17 @@ def data_process() -> dict[str, pd.DataFrame]:
         processed[sheet_name] = result[["取引先", "商品名", "合計金額"]] # type: ignore
 
     return processed
+
+def display_width(text: str) ->int:
+    """全角文字は2、半角文字は1としてカウントした表示幅を返す"""
+    width = 0
+    for ch in text:
+        # F(fullwidth), W(Wide)は全角扱い、それ以外は半角扱い
+        if unicodedata.east_asian_width(ch) in ("F", "W"):
+            width += 2
+        else:
+            width += 1
+    return width
 
 
 def cell_decoration(processed: dict[str, pd.DataFrame]) -> dict[str, px.Workbook]:
