@@ -15,10 +15,15 @@ def data_process() -> None:
     """データを取引先ごとにグルーピング、売り上げを計算"""
     sheets_dict = pd.read_excel(FILE_PATH / RAW_PATH / RAW_DATA, sheet_name=None)
 
+    # dict[シート名, DataFrame(行・列を含むデータ全体)]
+    processed: dict[str, pd.DataFrame] = {}
+
     for sheet_name, df in sheets_dict.items():
         df["合計金額"] = df["単価"] * df["数量"]
         result = df.groupby(["取引先", "商品名"], as_index=False)["合計金額"].sum()
-        print(result[["取引先", "商品名", "合計金額"]])
+        processed[sheet_name] = result[["取引先", "商品名", "合計金額"]]  # type: ignore
+
+    return processed
 
 
 def cell_decoration() -> None:
