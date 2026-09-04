@@ -20,7 +20,8 @@ def data_process() -> dict[str, pd.DataFrame]:
     for sheet_name, df in sheets_dict.items():
         df["合計金額"] = df["単価"] * df["数量"]
         result = df.groupby(["取引先", "商品名"], as_index=False)["合計金額"].sum()
-        processed[sheet_name] = result[["取引先", "商品名", "合計金額"]]  # type: ignore
+        result = result.sort_values(by=["取引先","商品名"], ascending=True) # type: ignore
+        processed[sheet_name] = result[["取引先", "商品名", "合計金額"]] # type: ignore
 
     return processed
 
