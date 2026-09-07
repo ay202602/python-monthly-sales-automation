@@ -39,6 +39,7 @@ def load_excel(raw_path: str, raw_data: str)-> dict[str, pd.DataFrame]:
 def display_width(text: str) ->int:
     """全角文字は2、半角文字は1としてカウントした表示幅を返す"""
     width = 0
+    # east_asian_width()は1文字しか判定できないため、for文で対応
     for ch in text:
         # F(fullwidth), W(Wide)は全角扱い、それ以外は半角扱い
         if unicodedata.east_asian_width(ch) in ("F", "W"):
@@ -88,12 +89,15 @@ def cell_decoration(processed: dict[str, pd.DataFrame]) -> dict[str, px.Workbook
     header_fill = PatternFill(
         fill_type="solid", start_color="DDEBF7", end_color="DDEBF7"
     )
-    # 格子罫線
+
+    # 格子罫線（黒）
     thin = Side(style="thin", color="000000")
     grid_border = Border(left=thin, right=thin, top=thin, bottom=thin)
 
+    # dict[シート名、ワークブック]
     workbooks: dict[str, px.Workbook] = {}
 
+    # DataFrameをExcelワークシートに転記できるよう変換
     for sheet_name, df in processed.items():
         wb = px.Workbook()
         ws = wb.active
@@ -113,23 +117,25 @@ def cell_decoration(processed: dict[str, pd.DataFrame]) -> dict[str, px.Workbook
             for cell in row:
                 cell.border = grid_border
         
-        # 会計の書式設定（Excelから引用）
+        # 数値部分の書式設定を会計に設定（書式設定はExcelから引用）
         ACCOUNTING_FORMAT = '_ ¥* #,##0_ ;_ ¥* -#,##0_ ;_ ¥* "-"_ ;_ @_ '
         for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=ws.max_column):
             for cell in row:
                 if isinstance(cell.value, (int, float)):
-                    cell.number_format = ACCOUNTING_FORMAT
-        
+        # セルを1行ずつ走査し、一番長い文字列を基準にセルの幅を調整（余白を2追加）
         for col_idx, col_cells in enumerate(ws.iter_cols(min_row=1, max_row=ws.max_row), start=1):
             max_length = 0
             for cell in col_cells:
+                # セルの値がない場合はそのままスキップ（次の行に進む）
                 if cell.value is None:
                     continue
                 if isinstance(cell.value, (int,float)):
                     display_text = f"{cell.value:,.0f}"
                 else:
                     display_text = str(cell.value)
+                # 前の文字列の幅と取得した文字列の幅を比較して最大値を取得
                 max_length = max(max_length, display_width(display_text))
+            # get_column_letterで列名に変換（列幅調整のため）
             ws.column_dimensions[get_column_letter(col_idx)].width = max_length + 2
         
         workbooks[sheet_name] = wb
