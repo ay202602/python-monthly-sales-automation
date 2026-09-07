@@ -1,6 +1,7 @@
 import pandas as pd
 import openpyxl as px
 import unicodedata
+import sys
 from openpyxl.styles import PatternFill, Border, Side
 from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.utils import get_column_letter
@@ -152,9 +153,18 @@ def save_excel(workbooks: dict[str, px.Workbook]) -> None:
 
 
 def main() -> None:
-    processed = data_process()
-    workbooks = cell_decoration(processed)
-    save_excel(workbooks)
+    try:
+        processed = data_process()
+        workbooks = cell_decoration(processed)
+        save_excel(workbooks)
+    except (FileNotFoundError, ValueError, KeyError, RuntimeError) as e:
+        print(f"処理を中断しました。: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"想定外のエラーが発生しました。: {e}")
+        sys.exit(1)
+    finally:
+        print("処理を実行しました")
 
 
 if __name__ == "__main__":
