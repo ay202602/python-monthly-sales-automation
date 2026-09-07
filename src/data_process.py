@@ -47,6 +47,40 @@ def display_width(text: str) ->int:
     return width
 
 
+def data_process() -> dict[str, pd.DataFrame]:
+    """データを取引先ごとにグルーピング、売り上げを計算"""
+
+    sheets_dict = load_excel(raw_path="raw", raw_data="monthly_sales_dummy_data.xlsx")
+
+    # dict[シート名, DataFrame(行・列を含むデータ全体)]
+    processed: dict[str, pd.DataFrame] = {}
+
+    customer = "取引先"
+    product_name = "商品名"
+    total_sale = "合計金額"
+    unit_price = "単価"
+    quantity = "数量"
+
+    required_columns = [customer, product_name, unit_price, quantity]
+
+    for sheet_name, df in sheets_dict.items():
+        if df.empty:
+            raise ValueError(f"シート{sheet_name}にデータが存在しません")
+        
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        if missing_columns:
+            raise KeyError(
+                f"シート{sheet_name}に必要な列がありません: {missing_columns}"
+            )
+        
+        df[total_sale] = df[unit_price] * df[quantity]
+        result = df.groupby([customer, product_name], as_index=False)[total_sale].sum()
+        result = result.sort_values(by=[customer, product_name], ascending=True) # type: ignore
+        processed[sheet_name] = result[[customer, product_name, total_sale]] # type: ignore
+
+    return processed
+
+
 def cell_decoration(processed: dict[str, pd.DataFrame]) -> dict[str, px.Workbook]:
     """加工済みのデータをExcelに装飾"""
     # DDEBF7 = 薄い青色
