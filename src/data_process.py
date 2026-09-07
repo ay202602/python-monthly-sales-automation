@@ -138,10 +138,14 @@ def cell_decoration(processed: dict[str, pd.DataFrame]) -> dict[str, px.Workbook
 
 def save_excel(workbooks: dict[str, px.Workbook]) -> None:
     """装飾したExcelファイルを出力"""
-    PROCESSED_PATH = FILE_PATH / "processed"
+
+    processed_path = get_file_path() / "processed"
+
+    if not processed_path.exists():
+        raise FileNotFoundError("processedフォルダが存在しません。")
 
     for sheet_name, wb in workbooks.items():
-        wb.save(PROCESSED_PATH / f"{sheet_name}売上データ.xlsx")
+        wb.save(processed_path / f"{sheet_name}売上データ.xlsx")
         print(
             f"xlsxファイルの出力が完了しました。ファイル名：{sheet_name}売上データ.xlsx"
         )
