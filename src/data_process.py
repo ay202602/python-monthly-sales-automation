@@ -118,10 +118,12 @@ def cell_decoration(processed: dict[str, pd.DataFrame]) -> dict[str, px.Workbook
                 cell.border = grid_border
         
         # 数値部分の書式設定を会計に設定（書式設定はExcelから引用）
-        ACCOUNTING_FORMAT = '_ ¥* #,##0_ ;_ ¥* -#,##0_ ;_ ¥* "-"_ ;_ @_ '
+        accouting_format = '_ ¥* #,##0_ ;_ ¥* -#,##0_ ;_ ¥* "-"_ ;_ @_ '
         for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=ws.max_column):
             for cell in row:
                 if isinstance(cell.value, (int, float)):
+                    cell.number_format = accouting_format
+
         # セルを1行ずつ走査し、一番長い文字列を基準にセルの幅を調整（余白を2追加）
         for col_idx, col_cells in enumerate(ws.iter_cols(min_row=1, max_row=ws.max_row), start=1):
             max_length = 0
@@ -129,7 +131,7 @@ def cell_decoration(processed: dict[str, pd.DataFrame]) -> dict[str, px.Workbook
                 # セルの値がない場合はそのままスキップ（次の行に進む）
                 if cell.value is None:
                     continue
-                if isinstance(cell.value, (int,float)):
+                if isinstance(cell.value, (int, float)):
                     display_text = f"{cell.value:,.0f}"
                 else:
                     display_text = str(cell.value)
