@@ -15,6 +15,26 @@ def get_file_path() -> Path:
     
     return file_path
 
+
+def load_excel(raw_path: str, raw_data: str)-> dict[str, pd.DataFrame]:
+    """xlsxファイルの取得、パスが不正の場合は異常終了"""
+    base_path = get_file_path() / raw_path
+    if not base_path.exists():
+        raise FileNotFoundError(f"指定されたフォルダが存在しません: raw_path= {raw_path}")
+
+    full_path = base_path / raw_data
+    if not full_path.exists():
+        raise FileNotFoundError(f"指定されたファイルが存在しません: raw_data= {raw_data}")
+
+    try:
+        df_dict = pd.read_excel(full_path, sheet_name=None)
+    except Exception as e:
+        raise RuntimeError(f"Excelファイルの読み込みに失敗しました。{full_path}") from e
+    else:
+        print("Excelファイルの読み込みが完了しました")
+        return df_dict
+
+
 def display_width(text: str) ->int:
     """全角文字は2、半角文字は1としてカウントした表示幅を返す"""
     width = 0
