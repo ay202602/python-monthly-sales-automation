@@ -6,26 +6,14 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.utils import get_column_letter
 from pathlib import Path
 
-FILE_PATH = Path(__file__).resolve().parents[1] / "data"
+def get_file_path() -> Path:
+    """データファイル格納パスを取得"""
+    file_path = Path(__file__).resolve().parents[1] / "data"
 
-
-def data_process() -> dict[str, pd.DataFrame]:
-    """データを取引先ごとにグルーピング、売り上げを計算"""
-    RAW_PATH = "raw"
-    RAW_DATA = "monthly_sales_dummy_data.xlsx"
-
-    sheets_dict = pd.read_excel(FILE_PATH / RAW_PATH / RAW_DATA, sheet_name=None)
-
-    # dict[シート名, DataFrame(行・列を含むデータ全体)]
-    processed: dict[str, pd.DataFrame] = {}
-
-    for sheet_name, df in sheets_dict.items():
-        df["合計金額"] = df["単価"] * df["数量"]
-        result = df.groupby(["取引先", "商品名"], as_index=False)["合計金額"].sum()
-        result = result.sort_values(by=["取引先","商品名"], ascending=True) # type: ignore
-        processed[sheet_name] = result[["取引先", "商品名", "合計金額"]] # type: ignore
-
-    return processed
+    if not file_path.exists():
+        raise FileNotFoundError("dataフォルダが存在しません。")
+    
+    return file_path
 
 def display_width(text: str) ->int:
     """全角文字は2、半角文字は1としてカウントした表示幅を返す"""
