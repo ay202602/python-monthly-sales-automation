@@ -53,12 +53,27 @@ def plot_data_process() -> dict[str, pd.DataFrame]:
 
     return result
 
+def create_pie_plot() -> dict[str, tuple[Figure, Axes]]:
+    """円グラフ作成"""
+    # data_process()側で空データをガード済みの前提で代入
+    result = plot_data_process()
+
+    plot_result: dict[str, tuple[Figure, Axes]] = {}
+
+    # 文字化け防止（メイリオに設定）
+    plt.rcParams["font.family"] = "Meiryo"
+
+    for sheet_name, df in result.items():
         fig, ax = plt.subplots()
-        # labelsにDataFrameを渡すため、tolist()にてリスト化
         ax.pie(
-            df_grouped["合計金額"], 
-            labels=df_grouped["商品名"].tolist(), 
-            autopct="%1.1f%%",startangle=90, 
-            counterclock=False
+            df["合計金額"],
+            labels=df["商品名"].tolist(),  # labelsにdataframeを渡すため、リスト化
+            autopct="%1.1f%%",
+            startangle=90,
+            counterclock=False,
         )
         ax.set_title(f"{sheet_name}分売上データ")
+
+        plot_result[sheet_name] = (fig, ax)
+
+    return plot_result
