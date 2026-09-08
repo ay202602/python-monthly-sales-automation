@@ -22,11 +22,15 @@ def load_excel(raw_path: str, raw_data: str)-> dict[str, pd.DataFrame]:
     """xlsxファイルの取得、パスが不正の場合は異常終了"""
     base_path = get_file_path() / raw_path
     if not base_path.exists():
-        raise FileNotFoundError(f"指定されたフォルダが存在しません: raw_path= {raw_path}")
+        raise FileNotFoundError(
+            f"指定されたフォルダが存在しません: raw_path= {raw_path}"
+        )
 
     full_path = base_path / raw_data
     if not full_path.exists():
-        raise FileNotFoundError(f"指定されたファイルが存在しません: raw_data= {raw_data}")
+        raise FileNotFoundError(
+            f"指定されたファイルが存在しません: raw_data= {raw_data}"
+        )
 
     try:
         df_dict = pd.read_excel(full_path, sheet_name=None)
@@ -120,13 +124,17 @@ def cell_decoration(processed: dict[str, pd.DataFrame]) -> dict[str, px.Workbook
         
         # 数値部分の書式設定を会計に設定（書式設定はExcelから引用）
         accouting_format = '_ ¥* #,##0_ ;_ ¥* -#,##0_ ;_ ¥* "-"_ ;_ @_ '
-        for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=ws.max_column):
+        for row in ws.iter_rows(
+            min_row=2, max_row=ws.max_row, min_col=1, max_col=ws.max_column
+        ):
             for cell in row:
                 if isinstance(cell.value, (int, float)):
                     cell.number_format = accouting_format
 
         # セルを1行ずつ走査し、一番長い文字列を基準にセルの幅を調整（余白を2追加）
-        for col_idx, col_cells in enumerate(ws.iter_cols(min_row=1, max_row=ws.max_row), start=1):
+        for col_idx, col_cells in enumerate(
+            ws.iter_cols(min_row=1, max_row=ws.max_row), start=1
+        ):
             max_length = 0
             for cell in col_cells:
                 # セルの値がない場合はそのままスキップ（次の行に進む）
