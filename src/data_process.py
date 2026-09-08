@@ -108,7 +108,7 @@ def cell_decoration(processed: dict[str, pd.DataFrame]) -> dict[str, px.Workbook
         for row in dataframe_to_rows(df, index=False, header=True):
             ws.append(row)
 
-        # ws[1] = セル1行目全体
+        # ws[1] = セル1行目全体（ヘッダー部分）
         for cell in ws[1]:
             cell.fill = header_fill
 
