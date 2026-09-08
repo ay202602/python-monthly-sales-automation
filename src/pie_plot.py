@@ -14,7 +14,7 @@ def get_base_path() -> Path:
     file_path = Path(__file__).resolve().parents[1] / "outputs"
 
     if not file_path.exists():
-        raise FileNotFoundError("outputsフォルダが存在しません。")
+        raise FileNotFoundError("outputsフォルダが存在しません")
 
     return file_path
 
