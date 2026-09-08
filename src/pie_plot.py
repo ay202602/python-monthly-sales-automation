@@ -34,9 +34,13 @@ def plot_data_process() -> dict[str, pd.DataFrame]:
         total = df_grouped["合計金額"].sum()
         ratio = df_grouped["合計金額"] / total
 
+        # large = 閾値以上の割合の値
         large = df_grouped[ratio >= THRESHOLD]
+
+        # small = 閾値未満の割合の値
         small = df_grouped[ratio < THRESHOLD]
 
+        # small内のdfに1件、行がある場合「その他」のdfを作って結合
         if not small.empty:
             other_row = pd.DataFrame({
                 "商品名": ["その他"],
