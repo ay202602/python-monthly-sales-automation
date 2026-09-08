@@ -92,3 +92,14 @@ def plot_save_fig(plot_result: dict[str, tuple[Figure, Axes]]) -> None:
     for sheet_name, (fig, ax) in plot_result.items():
         fig.savefig(f"{full_path}/{sheet_name}売上グラフ（円）.png", dpi=300)
 
+def main() -> None:
+    try:
+        plot_result = create_pie_plot()
+        plot_save_fig(plot_result)
+    except (FileNotFoundError, ValueError, KeyError) as e:
+        print(f"処理を中断しました: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"想定外のエラーが発生しました：{e}")
+    finally:
+        print("処理を実行しました")
