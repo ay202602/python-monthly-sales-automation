@@ -103,3 +103,5 @@ def main() -> None:
         print(f"想定外のエラーが発生しました：{e}")
     finally:
         print("処理を実行しました")
+if __name__ == "__main__":
+    main()
