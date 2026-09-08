@@ -42,13 +42,10 @@ def plot_data_process() -> dict[str, pd.DataFrame]:
 
         # small内のdfに1件、行がある場合「その他」のdfを作って結合
         if not small.empty:
-            other_row = pd.DataFrame({
-                "商品名": ["その他"],
-                "合計金額": [small["合計金額"].sum()]
-            })
-            df_grouped = pd.concat(
-                [large, other_row], ignore_index=True
+            other_row = pd.DataFrame(
+                {"商品名": ["その他"], "合計金額": [small["合計金額"].sum()]}
             )
+            df_grouped = pd.concat([large, other_row], ignore_index=True)
         else:
             df_grouped = large
 
