@@ -77,3 +77,18 @@ def create_pie_plot() -> dict[str, tuple[Figure, Axes]]:
         plot_result[sheet_name] = (fig, ax)
 
     return plot_result
+def plot_save_fig(plot_result: dict[str, tuple[Figure, Axes]]) -> None:
+    """グラフ結果をpngファイルとして保存"""
+    result_path = get_base_path() / "plot"
+
+    if not result_path.exists():
+        raise FileNotFoundError("plotフォルダが存在しません")
+
+    full_path = result_path / "pie_plot"
+
+    if not full_path.exists():
+        raise FileNotFoundError("pie_plotフォルダが存在しません")
+
+    for sheet_name, (fig, ax) in plot_result.items():
+        fig.savefig(f"{full_path}/{sheet_name}売上グラフ（円）.png", dpi=300)
+
