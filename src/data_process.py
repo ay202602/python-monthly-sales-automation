@@ -137,7 +137,7 @@ def cell_decoration(processed: dict[str, pd.DataFrame]) -> dict[str, px.Workbook
         ):
             max_length = 0
             for cell in col_cells:
-                # セルの値がない場合はそのままスキップ（次の行に進む）
+                # セルの値がない場合はそのままスキップ（次のセルに進む）
                 if cell.value is None:
                     continue
                 if isinstance(cell.value, (int, float)):
