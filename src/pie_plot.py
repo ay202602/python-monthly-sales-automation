@@ -53,6 +53,7 @@ def plot_data_process() -> dict[str, pd.DataFrame]:
 
     return result
 
+
 def create_pie_plot() -> dict[str, tuple[Figure, Axes]]:
     """円グラフ作成"""
     # data_process()側で空データをガード済みの前提で代入
@@ -77,6 +78,8 @@ def create_pie_plot() -> dict[str, tuple[Figure, Axes]]:
         plot_result[sheet_name] = (fig, ax)
 
     return plot_result
+
+
 def plot_save_fig(plot_result: dict[str, tuple[Figure, Axes]]) -> None:
     """グラフ結果をpngファイルとして保存"""
     result_path = get_base_path() / "plot"
@@ -92,6 +95,7 @@ def plot_save_fig(plot_result: dict[str, tuple[Figure, Axes]]) -> None:
     for sheet_name, (fig, ax) in plot_result.items():
         fig.savefig(f"{full_path}/{sheet_name}売上グラフ（円）.png", dpi=300)
 
+
 def main() -> None:
     try:
         plot_result = create_pie_plot()
@@ -103,5 +107,7 @@ def main() -> None:
         print(f"想定外のエラーが発生しました：{e}")
     finally:
         print("処理を実行しました")
+
+
 if __name__ == "__main__":
     main()
