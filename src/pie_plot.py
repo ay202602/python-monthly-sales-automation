@@ -19,15 +19,14 @@ def get_base_path() -> Path:
     return file_path
 
 
-def create_pie_plot() -> None:
-    """円グラフ作成"""
+def plot_data_process() -> dict[str, pd.DataFrame]:
     processed = data_process()
 
     THRESHOLD = 0.06
 
-    # 文字化け防止（メイリオに設定）
-    plt.rcParams["font.family"] = "Meiryo"
-    
+    # dict[シート名, DataFrame]
+    result: dict[str, pd.DataFrame] = {}
+
     for sheet_name, df in processed.items():
         df_grouped = df.groupby("商品名", as_index=False)["合計金額"].sum()
         df_grouped = df_grouped.sort_values(by="合計金額", ascending=False) # type: ignore
@@ -48,6 +47,10 @@ def create_pie_plot() -> None:
             )
         else:
             df_grouped = large
+
+        result[sheet_name] = df_grouped
+
+    return result
 
         fig, ax = plt.subplots()
         # labelsにDataFrameを渡すため、tolist()にてリスト化
