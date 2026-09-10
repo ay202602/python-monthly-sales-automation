@@ -7,16 +7,7 @@ from matplotlib.axes import Axes  # 型ヒント記述用
 from matplotlib.figure import Figure  # 型ヒント記述用
 
 from data_process import data_process
-
-
-def get_base_path() -> Path:
-    """画像フォルダパスの取得"""
-    file_path = Path(__file__).resolve().parents[1] / "outputs"
-
-    if not file_path.exists():
-        raise FileNotFoundError("outputsフォルダが存在しません")
-
-    return file_path
+from plot_path import get_outputs_path
 
 
 def plot_data_process() -> dict[str, pd.DataFrame]:
