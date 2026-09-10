@@ -1,6 +1,7 @@
 from pathlib import Path
 
-def get_base_path() -> Path:
+
+def get_outputs_path() -> Path:
     """画像フォルダパスの取得"""
     file_path = Path(__file__).resolve().parents[1] / "outputs"
 
@@ -12,4 +13,4 @@ def get_base_path() -> Path:
     if not full_path.exists():
         raise FileNotFoundError("plotフォルダが存在しません")
 
-    return file_path
+    return full_path
