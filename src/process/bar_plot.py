@@ -19,10 +19,8 @@ def create_bar_plot():
 
     plot_result: dict[str, Axes] = {}
 
-    sns.set_theme(style="darkgrid")
-
-    # 文字化け防止（メイリオに設定）
-    plt.rcParams["font.family"] = "Meiryo"
+    # font="Meiryo"は文字化け防止
+    sns.set_theme(style="darkgrid", context="paper", font="Meiryo")
 
     for sheet_name, df in result.items():
         plot_df = df.groupby(CUSTOMER, as_index=False)[[TOTAL_SALE]].sum()
