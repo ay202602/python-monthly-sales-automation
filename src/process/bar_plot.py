@@ -77,8 +77,17 @@ def plot_save_fig(plot_result: dict[str, Axes]):
 
 
 def main() -> None:
-    plot_result = create_bar_plot()
-    plot_save_fig(plot_result)
+    try:
+        plot_result = create_bar_plot()
+        plot_save_fig(plot_result)
+    except (FileNotFoundError, ValueError, KeyError, RuntimeError) as e:
+        print(f"処理を中断しました。：{e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"想定外のエラーが発生しました。：{e}")
+        sys.exit(1)
+    finally:
+        print("処理を実行しました")
 
 
 if __name__ == "__main__":
