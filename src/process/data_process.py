@@ -13,7 +13,7 @@ from src.common.columns import CUSTOMER, PRODUCT_NAME, QUANTITY, TOTAL_SALE, UNI
 
 def get_file_path() -> Path:
     """データファイル格納パスを取得"""
-    file_path = Path(__file__).resolve().parents[1] / "data"
+    file_path = Path(__file__).resolve().parents[2] / "data"
 
     if not file_path.exists():
         raise FileNotFoundError("dataフォルダが存在しません。")
