@@ -17,11 +17,11 @@ def get_file_path() -> Path:
 
     if not file_path.exists():
         raise FileNotFoundError("dataフォルダが存在しません。")
-    
+
     return file_path
 
 
-def load_excel(raw_path: str, raw_data: str)-> dict[str, pd.DataFrame]:
+def load_excel(raw_path: str, raw_data: str) -> dict[str, pd.DataFrame]:
     """xlsxファイルの取得、パスが不正の場合は異常終了"""
     base_path = get_file_path() / raw_path
     if not base_path.exists():
@@ -44,7 +44,7 @@ def load_excel(raw_path: str, raw_data: str)-> dict[str, pd.DataFrame]:
         return df_dict
 
 
-def display_width(text: str) ->int:
+def display_width(text: str) -> int:
     """全角文字は2、半角文字は1としてカウントした表示幅を返す"""
     width = 0
     # east_asian_width()は1文字しか判定できないため、for文で対応
@@ -70,7 +70,7 @@ def data_process() -> dict[str, pd.DataFrame]:
     for sheet_name, df in sheets_dict.items():
         if df.empty:
             raise ValueError(f"シート{sheet_name}にデータが存在しません")
-        
+
         missing_columns = [col for col in required_columns if col not in df.columns]
         if missing_columns:
             raise KeyError(
@@ -118,7 +118,7 @@ def cell_decoration(processed: dict[str, pd.DataFrame]) -> dict[str, px.Workbook
         ):
             for cell in row:
                 cell.border = grid_border
-        
+
         # 数値部分の書式設定を会計に設定（書式設定はExcelから引用）
         accouting_format = '_ ¥* #,##0_ ;_ ¥* -#,##0_ ;_ ¥* "-"_ ;_ @_ '
         for row in ws.iter_rows(
@@ -145,7 +145,7 @@ def cell_decoration(processed: dict[str, pd.DataFrame]) -> dict[str, px.Workbook
                 max_length = max(max_length, display_width(display_text))
             # get_column_letterで列名に変換（列幅調整のため）
             ws.column_dimensions[get_column_letter(col_idx)].width = max_length + 2
-        
+
         workbooks[sheet_name] = wb
 
     return workbooks
