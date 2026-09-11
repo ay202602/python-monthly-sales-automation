@@ -7,6 +7,7 @@ from matplotlib.container import BarContainer
 from matplotlib.figure import Figure
 from matplotlib.ticker import FuncFormatter
 
+from src.common.columns import CUSTOMER, TOTAL_SALE
 from src.process.data_process import data_process
 from src.common.plot_path import get_outputs_path
 
@@ -24,15 +25,15 @@ def create_bar_plot():
     plt.rcParams["font.family"] = "Meiryo"
 
     for sheet_name, df in result.items():
-        plot_df = df.groupby("取引先", as_index=False)[["合計金額"]].sum()
-        plot_df = plot_df.sort_values(by="取引先", ascending=False)
+        plot_df = df.groupby(CUSTOMER, as_index=False)[[TOTAL_SALE]].sum()
+        plot_df = plot_df.sort_values(by=CUSTOMER, ascending=False)
 
         plt.figure(figsize=(10, 6))  # 幅・高さ
 
         ax = sns.barplot(
             data=plot_df,
-            x="合計金額",
-            y="取引先",
+            x=TOTAL_SALE,
+            y=CUSTOMER,
         )
 
         ax.set_title(f"{sheet_name}分売上データ")
