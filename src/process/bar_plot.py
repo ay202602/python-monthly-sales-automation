@@ -7,8 +7,8 @@ from matplotlib.container import BarContainer
 from matplotlib.figure import Figure
 from matplotlib.ticker import FuncFormatter
 
-from data_process import data_process
-from plot_path import get_outputs_path
+from src.process.data_process import data_process
+from src.common.plot_path import get_outputs_path
 
 
 def create_bar_plot():

@@ -6,8 +6,8 @@ import pandas as pd
 from matplotlib.axes import Axes  # 型ヒント記述用
 from matplotlib.figure import Figure  # 型ヒント記述用
 
-from data_process import data_process
-from plot_path import get_outputs_path
+from src.process.data_process import data_process
+from src.common.plot_path import get_outputs_path
 
 
 def plot_data_process() -> dict[str, pd.DataFrame]:
@@ -20,7 +20,7 @@ def plot_data_process() -> dict[str, pd.DataFrame]:
 
     for sheet_name, df in processed.items():
         df_grouped = df.groupby("商品名", as_index=False)["合計金額"].sum()
-        df_grouped = df_grouped.sort_values(by="合計金額", ascending=False) # type: ignore
+        df_grouped = df_grouped.sort_values(by="合計金額", ascending=False)  # type: ignore
 
         total = df_grouped["合計金額"].sum()
         ratio = df_grouped["合計金額"] / total
