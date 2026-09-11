@@ -8,8 +8,8 @@ from matplotlib.figure import Figure
 from matplotlib.ticker import FuncFormatter
 
 from src.common.columns import CUSTOMER, TOTAL_SALE
-from src.process.data_process import data_process
 from src.common.plot_path import get_outputs_path
+from src.process.data_process import data_process
 
 
 def create_bar_plot():
