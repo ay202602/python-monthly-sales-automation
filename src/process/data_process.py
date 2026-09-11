@@ -8,6 +8,9 @@ from openpyxl.styles import Border, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.utils.dataframe import dataframe_to_rows
 
+from src.common.columns import CUSTOMER, PRODUCT_NAME, QUANTITY, TOTAL_SALE, UNIT_PRICE
+
+
 def get_file_path() -> Path:
     """データファイル格納パスを取得"""
     file_path = Path(__file__).resolve().parents[1] / "data"
@@ -62,13 +65,7 @@ def data_process() -> dict[str, pd.DataFrame]:
     # dict[シート名, DataFrame(行・列を含むデータ全体)]
     processed: dict[str, pd.DataFrame] = {}
 
-    customer = "取引先"
-    product_name = "商品名"
-    total_sale = "合計金額"
-    unit_price = "単価"
-    quantity = "数量"
-
-    required_columns = [customer, product_name, unit_price, quantity]
+    required_columns = [CUSTOMER, PRODUCT_NAME, UNIT_PRICE, QUANTITY]
 
     for sheet_name, df in sheets_dict.items():
         if df.empty:
@@ -79,11 +76,11 @@ def data_process() -> dict[str, pd.DataFrame]:
             raise KeyError(
                 f"シート{sheet_name}に必要な列がありません: {missing_columns}"
             )
-        
-        df[total_sale] = df[unit_price] * df[quantity]
-        result = df.groupby([customer, product_name], as_index=False)[total_sale].sum()
-        result = result.sort_values(by=[customer, product_name], ascending=True) # type: ignore
-        processed[sheet_name] = result[[customer, product_name, total_sale]] # type: ignore
+
+        df[TOTAL_SALE] = df[UNIT_PRICE] * df[QUANTITY]
+        result = df.groupby([CUSTOMER, PRODUCT_NAME], as_index=False)[TOTAL_SALE].sum()
+        result = result.sort_values(by=[CUSTOMER, PRODUCT_NAME], ascending=True)  # type: ignore
+        processed[sheet_name] = result[[CUSTOMER, PRODUCT_NAME, TOTAL_SALE]]  # type: ignore
 
     return processed
 
