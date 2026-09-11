@@ -56,7 +56,6 @@ def create_bar_plot():
 
         plt.tight_layout()
         plot_result[sheet_name] = ax
-    plt.show()
 
     return plot_result
 
