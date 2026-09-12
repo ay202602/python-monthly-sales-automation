@@ -1,5 +1,6 @@
 matplotlib==3.11.1
 openpyxl==3.1.5
+pillow==12.3.0
 pandas==3.0.5
 seaborn==0.13.2
 pytest==9.1.1
