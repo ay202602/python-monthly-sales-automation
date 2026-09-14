@@ -55,6 +55,7 @@ def create_pie_plot() -> dict[str, tuple[Figure, Axes]]:
 
     # 文字化け防止（メイリオに設定）
     plt.rcParams["font.family"] = "Meiryo"
+    plt.rcParams["font.size"] = 12
 
     for sheet_name, df in result.items():
         fig, ax = plt.subplots()
