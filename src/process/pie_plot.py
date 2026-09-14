@@ -85,6 +85,7 @@ def plot_save_fig(plot_result: dict[str, tuple[Figure, Axes]]) -> None:
 
     for sheet_name, (fig, ax) in plot_result.items():
         fig.savefig(f"{full_path}/{sheet_name}売上円グラフ.png", dpi=300)
+        print(f"作成しました：{sheet_name}売上円グラフ.png")
 
 
 def main() -> None:
