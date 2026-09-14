@@ -6,8 +6,9 @@ import pandas as pd
 from matplotlib.axes import Axes  # 型ヒント記述用
 from matplotlib.figure import Figure  # 型ヒント記述用
 
-from src.process.data_process import data_process
+from src.common.plot_general import add_figure_border
 from src.common.plot_path import get_outputs_path
+from src.process.data_process import data_process
 
 
 def plot_data_process() -> dict[str, pd.DataFrame]:
