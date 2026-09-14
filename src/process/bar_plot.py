@@ -40,7 +40,7 @@ def create_bar_plot():
         ax.set_ylabel("取引先".join("\n"))
 
         # バー先端がプロット領域からはみ出さないよう余白を確保
-        ax.margins(x=0.15)
+        ax.margins(x=0.2)
 
         # 各バーに数値ラベルを表示（外側・千円単位・カンマ区切り）
         for contaier in ax.containers:
