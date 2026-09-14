@@ -54,6 +54,7 @@ def create_bar_plot():
 
         # x軸ラベルも千円単位・カンマ区切りに統一
         ax.xaxis.set_major_formatter(FuncFormatter(lambda x, _: f"{int(x/1000):,}千円"))
+        ax.locator_params(axis="x", nbins=5)
 
         plt.tight_layout()
         
