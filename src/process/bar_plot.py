@@ -8,6 +8,7 @@ from matplotlib.figure import Figure
 from matplotlib.ticker import FuncFormatter
 
 from src.common.columns import CUSTOMER, TOTAL_SALE
+from src.common.plot_general import add_figure_border
 from src.common.plot_path import get_outputs_path
 from src.process.data_process import data_process
 
@@ -55,6 +56,11 @@ def create_bar_plot():
         ax.xaxis.set_major_formatter(FuncFormatter(lambda x, _: f"{int(x/1000):,}千円"))
 
         plt.tight_layout()
+        
+        fig = ax.get_figure()
+        assert isinstance(fig, Figure)
+        add_figure_border(fig)
+        
         plot_result[sheet_name] = ax
 
     return plot_result
