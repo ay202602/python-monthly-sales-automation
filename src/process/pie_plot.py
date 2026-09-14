@@ -68,6 +68,7 @@ def create_pie_plot() -> dict[str, tuple[Figure, Axes]]:
         )
         ax.set_title(f"{sheet_name}分売上データ")
 
+        add_figure_border(fig)
         plot_result[sheet_name] = (fig, ax)
 
     return plot_result
