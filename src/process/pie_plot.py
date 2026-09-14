@@ -84,7 +84,7 @@ def plot_save_fig(plot_result: dict[str, tuple[Figure, Axes]]) -> None:
         raise FileNotFoundError("pie_plotフォルダが存在しません")
 
     for sheet_name, (fig, ax) in plot_result.items():
-        fig.savefig(f"{full_path}/{sheet_name}売上グラフ（円）.png", dpi=300)
+        fig.savefig(f"{full_path}/{sheet_name}売上円グラフ.png", dpi=300)
 
 
 def main() -> None:
