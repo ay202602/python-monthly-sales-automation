@@ -1,4 +1,5 @@
 from pathlib import Path
+from openpyxl.drawing.image import Image as XLImage
 def get_outputs_path() -> Path:
     outputs_path = Path(__file__).resolve().parents[2] / "outputs"
 
@@ -29,3 +30,12 @@ def get_excel_path() -> list[Path]:
         raise FileNotFoundError("加工済みExcelファイルが見つかりません")
 
     return process_excel_path
+
+
+def resize_image(img: XLImage, target_width: int) -> None:
+    """画像の縦横比を保ったまま幅を基準にリサイズ"""
+    ratio = target_width / img.width
+    img.width = target_width
+    img.height = int(img.height * ratio)
+
+
