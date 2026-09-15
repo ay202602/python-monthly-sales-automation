@@ -99,3 +99,11 @@ def plot_png_paste():
         wb.save(excel_path)
         print(f"pngファイルを添付しました：{excel_path.name}")
 
+
+
+def main() -> None:
+    plot_png_paste()
+
+
+if __name__ == "__main__":
+    main()
