@@ -6,6 +6,7 @@ from openpyxl.drawing.image import Image as XLImage
 import src.common.plot_path as plot_path
 
 
+# TODO: リファクタリング時に削除（パス指定専用pyファイルにてまとめる）
 def get_outputs_path() -> Path:
     outputs_path = Path(__file__).resolve().parents[2] / "outputs"
 
@@ -18,6 +19,9 @@ def get_outputs_path() -> Path:
         raise FileNotFoundError("pdfフォルダが存在しません")
 
     return pdf_path
+
+
+# TODO: リファクタリング時に削除（パス指定専用pyファイルにてまとめる）
 def get_excel_path() -> list[Path]:
     """加工済みExcelファイルのパス取得（複数対応可能）"""
     data_path = Path(__file__).resolve().parents[2] / "data"
@@ -45,6 +49,9 @@ def resize_image(img: XLImage, target_width: int) -> None:
     img.height = int(img.height * ratio)
 
 
+# TODO: エラーハンドリング実装
+# TODO: 印刷設定、用紙サイズ設定の処理を別関数にて定義
+# TODO: 実行時に既にシートがある場合は上書きする処理を追加
 def plot_png_paste():
     """加工済みExcelファイル内にグラフ結果pngファイルを添付"""
     excel_paths = get_excel_path()
@@ -99,6 +106,8 @@ def plot_png_paste():
         wb.save(excel_path)
         print(f"pngファイルを添付しました：{excel_path.name}")
 
+
+# TODO: 加工済みExcelファイルをPDF化関数を定義
 
 
 def main() -> None:

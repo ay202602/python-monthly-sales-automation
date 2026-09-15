@@ -1,5 +1,7 @@
 from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle
+
+# TODO: ここにグラフの描写関連のクラスを定義する
 def add_figure_border(fig: Figure, line_width: float = 5, color: str = "black") -> None:
     """グラフ全体を囲む枠線を追加する"""
     fig.add_artist(
