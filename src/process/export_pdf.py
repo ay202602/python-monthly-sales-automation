@@ -100,8 +100,13 @@ def plot_png_paste():
         if not bar_png_path.exists():
             raise FileNotFoundError(f"棒グラフpngが見つかりません：{bar_png_path}")
 
-        # グラフ貼り付け用の新規ワークシート追加
-        ws = wb.create_sheet("グラフ")
+        # グラフ貼り付け用の新規ワークシート追加（既に存在している場合は上書き）
+        GRAPH = "グラフ"
+
+        if GRAPH in wb.sheetnames:
+            del wb[GRAPH]
+
+        ws = wb.create_sheet(GRAPH)
         set_print_setup(ws)
         
         pie_img = XLImage(str(pie_png_path))
