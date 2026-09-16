@@ -113,11 +113,31 @@ def plot_png_paste():
         print(f"pngファイルを添付しました：{excel_path.name}")
 
 
-# TODO: 加工済みExcelファイルをPDF化関数を定義
+def create_pdf() -> None:
+    """加工済ExcelファイルをPDFとして出力"""
+    excel_paths = get_excel_path()
+    pdf_dir = get_pdf_path()
+
+    excel = win32.EnsureDispatch("Excel.Application")
+    excel.Visible = False
+
+    try:
+        for excel_path in excel_paths:
+            wb = excel.Workbooks.Open(str(excel_path))
+            try:
+                wb.Worksheets.Select()  # 全シート選択
+                pdf_path = pdf_dir / f"{excel_path.stem}.pdf"
+                wb.ActiveSheet.ExportAsFixedFormat(0, str(pdf_path))
+                print(f"PDF出力しました：{pdf_path.name}")
+            finally:
+                wb.Close(SaveChanges=False)
+    finally:
+        excel.Quit()
 
 
 def main() -> None:
     plot_png_paste()
+    create_pdf()
 
 
 if __name__ == "__main__":
