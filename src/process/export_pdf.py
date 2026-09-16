@@ -7,7 +7,7 @@ import src.common.plot_path as plot_path
 
 
 # TODO: リファクタリング時に削除（パス指定専用pyファイルにてまとめる）
-def get_outputs_path() -> Path:
+def get_pdf_path() -> Path:
     outputs_path = Path(__file__).resolve().parents[2] / "outputs"
 
     if not outputs_path.exists():
