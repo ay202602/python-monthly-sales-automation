@@ -4,7 +4,7 @@ import openpyxl as px
 import win32com.client.gencache as win32
 from openpyxl.drawing.image import Image as XLImage
 
-import src.common.plot_path as plot_path
+from src.common.plot_path import get_outputs_path
 
 
 # TODO: リファクタリング時に削除（パス指定専用pyファイルにてまとめる）
@@ -74,8 +74,8 @@ def plot_png_paste():
     """加工済みExcelファイル内にグラフ結果pngファイルを添付"""
     excel_paths = get_excel_path()
 
-    pie_plot_path = plot_path.get_outputs_path() / "pie_plot"
-    bar_plot_path = plot_path.get_outputs_path() / "bar_plot"
+    pie_plot_path = get_outputs_path() / "pie_plot"
+    bar_plot_path = get_outputs_path() / "bar_plot"
 
     # A4印刷可能領域に合わせた画像幅（px、余白19mm・96dpi換算の目安）
     IMAGE_WIDTH = 650
