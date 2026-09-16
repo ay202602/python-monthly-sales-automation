@@ -44,6 +44,7 @@ def get_excel_path() -> list[Path]:
     return process_excel_path
 
 
+# TODO: エラーハンドリング実装（全ての処理）
 def resize_image(img: XLImage, target_width: int) -> None:
     """画像の縦横比を保ったまま幅を基準にリサイズ"""
     ratio = target_width / img.width
@@ -51,6 +52,7 @@ def resize_image(img: XLImage, target_width: int) -> None:
     img.height = int(img.height * ratio)
 
 
+# TODO: エラーハンドリング実装（全ての処理）
 def set_print_setup(ws: Worksheet) -> None:
     """印刷設定（A4・縦向き・余白・1ページ納め）を統一"""
     # A4・縦向き・余白設定
@@ -71,6 +73,7 @@ def set_print_setup(ws: Worksheet) -> None:
     ws.print_options.horizontalCentered = True
 
 
+# TODO: エラーハンドリング実装（全ての処理）
 def plot_png_paste():
     """加工済みExcelファイル内にグラフ結果pngファイルを添付"""
     excel_paths = get_excel_path()
@@ -114,6 +117,7 @@ def plot_png_paste():
         print(f"pngファイルを添付しました：{excel_path.name}")
 
 
+# TODO: エラーハンドリング実装（全ての処理）
 def create_pdf() -> None:
     """加工済ExcelファイルをPDFとして出力"""
     excel_paths = get_excel_path()
