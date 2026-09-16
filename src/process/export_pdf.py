@@ -3,6 +3,7 @@ from pathlib import Path
 import openpyxl as px
 import win32com.client.gencache as win32
 from openpyxl.drawing.image import Image as XLImage
+from openpyxl.worksheet.worksheet import Worksheet  # 型ヒント記述用
 
 from src.common.plot_path import get_outputs_path
 
