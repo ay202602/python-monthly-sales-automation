@@ -103,8 +103,12 @@ def cell_decoration(processed: dict[str, pd.DataFrame]) -> dict[str, px.Workbook
     for sheet_name, df in processed.items():
         wb = px.Workbook()
         ws = wb.active
+        
         assert ws is not None
         ws.title = sheet_name
+
+        assert ws.oddHeader is not None
+        ws.oddHeader.center.text = f"{sheet_name}分売上データ"
 
         for row in dataframe_to_rows(df, index=False, header=True):
             ws.append(row)
