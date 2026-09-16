@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import openpyxl as px
+import win32com.client.gencache as win32
 from openpyxl.drawing.image import Image as XLImage
 
 import src.common.plot_path as plot_path
@@ -49,9 +50,26 @@ def resize_image(img: XLImage, target_width: int) -> None:
     img.height = int(img.height * ratio)
 
 
-# TODO: エラーハンドリング実装
-# TODO: 印刷設定、用紙サイズ設定の処理を別関数にて定義
-# TODO: 実行時に既にシートがある場合は上書きする処理を追加
+def set_print_setup(ws: Worksheet) -> None:
+    """印刷設定（A4・縦向き・余白・1ページ納め）を統一"""
+    # A4・縦向き・余白設定
+    ws.page_setup.paperSize = ws.PAPERSIZE_A4
+    ws.page_setup.orientation = ws.ORIENTATION_PORTRAIT
+    ws.page_margins.top = 1.0
+    ws.page_margins.bottom = 1.0
+    ws.page_margins.right = 0.75
+    ws.page_margins.left = 0.75
+
+    assert ws.sheet_properties.pageSetUpPr is not None
+    ws.sheet_properties.pageSetUpPr.fitToPage = True
+
+    # 横は1ページに納める、縦の場合は1ページを超える場合は次のページで表示
+    ws.page_setup.fitToWidth = 1
+    ws.page_setup.fitToHeight = 0  # 0 = 高さ制限なし
+
+    ws.print_options.horizontalCentered = True
+
+
 def plot_png_paste():
     """加工済みExcelファイル内にグラフ結果pngファイルを添付"""
     excel_paths = get_excel_path()
@@ -79,14 +97,6 @@ def plot_png_paste():
         # グラフ貼り付け用の新規ワークシート追加
         ws = wb.create_sheet("グラフ")
 
-        # A4・縦向き・余白設定
-        ws.page_setup.paperSize = ws.PAPERSIZE_A4
-        ws.page_setup.orientation = ws.ORIENTATION_PORTRAIT
-        ws.page_margins.left = 0.75
-        ws.page_margins.right = 0.75
-        ws.page_margins.top = 1.0
-        ws.page_margins.bottom = 1.0
-
         pie_img = XLImage(str(pie_png_path))
         resize_image(pie_img, IMAGE_WIDTH)
 
@@ -95,13 +105,6 @@ def plot_png_paste():
 
         ws.add_image(pie_img, "A1")
         ws.add_image(bar_img, "A30")
-
-        # 印刷時に1ページへ収める設定
-        ws.sheet_properties.pageSetUpPr.fitToPage = True
-        ws.page_setup.fitToWidth = 1
-        ws.page_setup.fitToHeight = (
-            0  # 0=高さ制限なし（縦に長い場合は複数ページに分割）
-        )
 
         wb.save(excel_path)
         print(f"pngファイルを添付しました：{excel_path.name}")
