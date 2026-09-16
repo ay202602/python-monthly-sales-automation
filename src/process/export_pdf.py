@@ -84,7 +84,9 @@ def plot_png_paste():
         wb = px.load_workbook(excel_path)
 
         # 既存シート名を基準にpngファイル名を組み立て
-        sheet_name = wb.sheetnames[0]
+        data_ws = wb.worksheets[0]
+        sheet_name = data_ws.title
+        set_print_setup(data_ws)
 
         pie_png_path = pie_plot_path / f"{sheet_name}売上円グラフ.png"
         bar_png_path = bar_plot_path / f"{sheet_name}売上棒グラフ.png"
@@ -96,7 +98,8 @@ def plot_png_paste():
 
         # グラフ貼り付け用の新規ワークシート追加
         ws = wb.create_sheet("グラフ")
-
+        set_print_setup(ws)
+        
         pie_img = XLImage(str(pie_png_path))
         resize_image(pie_img, IMAGE_WIDTH)
 
