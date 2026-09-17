@@ -8,6 +8,7 @@ from openpyxl.styles import Border, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.utils.dataframe import dataframe_to_rows
 
+from src.common.columns import Columns
 from src.common.path_general import FolderPath
 
 
@@ -45,7 +46,8 @@ def data_process() -> dict[str, pd.DataFrame]:
     # dict[シート名, DataFrame(行・列を含むデータ全体)]
     processed: dict[str, pd.DataFrame] = {}
 
-    required_columns = [CUSTOMER, PRODUCT_NAME, UNIT_PRICE, QUANTITY]
+
+    required_columns = [Columns.CUSTOMER, Columns.PRODUCT_NAME, Columns.UNIT_PRICE, Columns.QUANTITY]
 
     for sheet_name, df in sheets_dict.items():
         if df.empty:
@@ -57,10 +59,10 @@ def data_process() -> dict[str, pd.DataFrame]:
                 f"シート{sheet_name}に必要な列がありません: {missing_columns}"
             )
 
-        df[TOTAL_SALE] = df[UNIT_PRICE] * df[QUANTITY]
-        result = df.groupby([CUSTOMER, PRODUCT_NAME], as_index=False)[TOTAL_SALE].sum()
-        result = result.sort_values(by=[CUSTOMER, PRODUCT_NAME], ascending=True)  # type: ignore
-        processed[sheet_name] = result[[CUSTOMER, PRODUCT_NAME, TOTAL_SALE]]  # type: ignore
+        df[Columns.TOTAL_SALE] = df[Columns.UNIT_PRICE] * df[Columns.QUANTITY]
+        result = df.groupby([Columns.CUSTOMER, Columns.PRODUCT_NAME], as_index=False)[Columns.TOTAL_SALE].sum()
+        result = result.sort_values(by=[Columns.CUSTOMER, Columns.PRODUCT_NAME], ascending=True)  # type: ignore
+        processed[sheet_name] = result[[Columns.CUSTOMER, Columns.PRODUCT_NAME, Columns.TOTAL_SALE]]  # type: ignore
 
     return processed
 

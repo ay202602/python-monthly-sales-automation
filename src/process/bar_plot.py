@@ -7,9 +7,9 @@ from matplotlib.container import BarContainer
 from matplotlib.figure import Figure
 from matplotlib.ticker import FuncFormatter
 
+from src.common.columns import Columns
 from src.common.path_general import FolderPath
 from src.common.plot_general import add_figure_border
-from src.common.plot_path import get_outputs_path
 from src.process.data_process import data_process
 
 
@@ -24,15 +24,17 @@ def create_bar_plot():
     sns.set_theme(style="darkgrid", context="notebook", font="Meiryo")
 
     for sheet_name, df in result.items():
-        plot_df = df.groupby(CUSTOMER, as_index=False)[[TOTAL_SALE]].sum()
-        plot_df = plot_df.sort_values(by=CUSTOMER, ascending=False)
+        plot_df = df.groupby(Columns.CUSTOMER, as_index=False)[
+            [Columns.TOTAL_SALE]
+        ].sum()
+        plot_df = plot_df.sort_values(by=Columns.CUSTOMER, ascending=False)
 
         plt.figure(figsize=(10, 6))  # 幅・高さ
 
         ax = sns.barplot(
             data=plot_df,
-            x=TOTAL_SALE,
-            y=CUSTOMER,
+            x=Columns.TOTAL_SALE,
+            y=Columns.CUSTOMER,
         )
 
         ax.set_title(f"{sheet_name}分売上データ")
