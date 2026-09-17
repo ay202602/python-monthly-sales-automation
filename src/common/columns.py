@@ -1,6 +1,6 @@
 from enum import StrEnum
 
-
+# TODO: データ加工の処理もクラスに追加（可能であれば）
 class Columns(StrEnum):
     CUSTOMER = "取引先"
     PRODUCT_NAME = "商品名"

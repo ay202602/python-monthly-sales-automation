@@ -10,7 +10,7 @@ from src.common.path_general import FolderPath
 from src.common.plot_general import add_figure_border
 from src.process.data_process import data_process
 
-
+# TODO: エラーハンドリング実装
 def plot_data_process() -> dict[str, pd.DataFrame]:
     processed = data_process()
 
@@ -45,7 +45,7 @@ def plot_data_process() -> dict[str, pd.DataFrame]:
 
     return result
 
-
+# TODO: エラーハンドリング実装
 def create_pie_plot() -> dict[str, tuple[Figure, Axes]]:
     """円グラフ作成"""
     # data_process()側で空データをガード済みの前提で代入
@@ -73,7 +73,7 @@ def create_pie_plot() -> dict[str, tuple[Figure, Axes]]:
 
     return plot_result
 
-
+# TODO: エラーハンドリング実装
 def plot_save_fig(plot_result: dict[str, tuple[Figure, Axes]]) -> None:
     """グラフ結果をpngファイルとして保存"""
     result_path = FolderPath().get_plot_path("pie_plot")

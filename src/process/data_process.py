@@ -11,7 +11,7 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 from src.common.columns import Columns
 from src.common.path_general import FolderPath
 
-
+# TODO: エラーハンドリング実装できる箇所が無いか確認
 def load_excel(raw_data: str) -> dict[str, pd.DataFrame]:
     """xlsxファイルの取得、パスが不正の場合は異常終了"""
     raw_data_path = FolderPath().get_raw_data_path() / raw_data

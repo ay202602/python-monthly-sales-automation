@@ -1,6 +1,6 @@
 from pathlib import Path
 
-
+# TODO: 処理完了後にprint文でログを残す設計を行う（どの関数が実行されたか分かるように設計）
 class FolderPath:
     def __init__(self) -> None:
         self.folder_path = Path(__file__).resolve().parents[2]
