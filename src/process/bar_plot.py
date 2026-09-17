@@ -7,7 +7,7 @@ from matplotlib.container import BarContainer
 from matplotlib.figure import Figure
 from matplotlib.ticker import FuncFormatter
 
-from src.common.columns import CUSTOMER, TOTAL_SALE
+from src.common.path_general import FolderPath
 from src.common.plot_general import add_figure_border
 from src.common.plot_path import get_outputs_path
 from src.process.data_process import data_process
@@ -69,17 +69,12 @@ def create_bar_plot():
 
 def plot_save_fig(plot_result: dict[str, Axes]):
     """グラフ結果をpngとして保存"""
-    result_path = get_outputs_path()
-
-    full_path = result_path / "bar_plot"
-
-    if not full_path.exists():
-        raise FileNotFoundError("bar_plotフォルダが存在しません")
-
+    result_path = FolderPath().get_plot_path("bar_plot")
+    
     for sheet_name, ax in plot_result.items():
         fig = ax.get_figure()
         assert isinstance(fig, Figure)
-        fig.savefig(f"{full_path}/{sheet_name}売上棒グラフ.png", dpi=300)
+        fig.savefig(f"{result_path}/{sheet_name}売上棒グラフ.png", dpi=300)
         print(f"作成しました：{sheet_name}売上棒グラフ.png")
 
 

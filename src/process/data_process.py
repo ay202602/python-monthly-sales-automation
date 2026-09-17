@@ -8,37 +8,17 @@ from openpyxl.styles import Border, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.utils.dataframe import dataframe_to_rows
 
-from src.common.columns import CUSTOMER, PRODUCT_NAME, QUANTITY, TOTAL_SALE, UNIT_PRICE
+from src.common.path_general import FolderPath
 
 
-def get_file_path() -> Path:
-    """データファイル格納パスを取得"""
-    file_path = Path(__file__).resolve().parents[2] / "data"
-
-    if not file_path.exists():
-        raise FileNotFoundError("dataフォルダが存在しません。")
-
-    return file_path
-
-
-def load_excel(raw_path: str, raw_data: str) -> dict[str, pd.DataFrame]:
+def load_excel(raw_data: str) -> dict[str, pd.DataFrame]:
     """xlsxファイルの取得、パスが不正の場合は異常終了"""
-    base_path = get_file_path() / raw_path
-    if not base_path.exists():
-        raise FileNotFoundError(
-            f"指定されたフォルダが存在しません: raw_path= {raw_path}"
-        )
-
-    full_path = base_path / raw_data
-    if not full_path.exists():
-        raise FileNotFoundError(
-            f"指定されたファイルが存在しません: raw_data= {raw_data}"
-        )
+    raw_data_path = FolderPath().get_raw_data_path() / raw_data
 
     try:
-        df_dict = pd.read_excel(full_path, sheet_name=None)
+        df_dict = pd.read_excel(raw_data_path, sheet_name=None)
     except Exception as e:
-        raise RuntimeError(f"Excelファイルの読み込みに失敗しました。{full_path}") from e
+        raise RuntimeError(f"Excelファイルの読み込みに失敗しました。{raw_data_path}") from e
     else:
         print("Excelファイルの読み込みが完了しました")
         return df_dict
@@ -60,7 +40,7 @@ def display_width(text: str) -> int:
 def data_process() -> dict[str, pd.DataFrame]:
     """データを取引先ごとにグルーピング、売り上げを計算"""
 
-    sheets_dict = load_excel(raw_path="raw", raw_data="monthly_sales_dummy_data.xlsx")
+    sheets_dict = load_excel(raw_data="monthly_sales_dummy_data.xlsx")
 
     # dict[シート名, DataFrame(行・列を含むデータ全体)]
     processed: dict[str, pd.DataFrame] = {}
@@ -158,10 +138,7 @@ def cell_decoration(processed: dict[str, pd.DataFrame]) -> dict[str, px.Workbook
 def save_excel(workbooks: dict[str, px.Workbook]) -> None:
     """装飾したExcelファイルを出力"""
 
-    processed_path = get_file_path() / "processed"
-
-    if not processed_path.exists():
-        raise FileNotFoundError("processedフォルダが存在しません。")
+    processed_path = FolderPath().get_process_data_path()
 
     for sheet_name, wb in workbooks.items():
         wb.save(processed_path / f"{sheet_name}売上データ.xlsx")

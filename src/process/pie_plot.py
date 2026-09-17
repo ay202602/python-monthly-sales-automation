@@ -6,8 +6,8 @@ import pandas as pd
 from matplotlib.axes import Axes  # 型ヒント記述用
 from matplotlib.figure import Figure  # 型ヒント記述用
 
+from src.common.path_general import FolderPath
 from src.common.plot_general import add_figure_border
-from src.common.plot_path import get_outputs_path
 from src.process.data_process import data_process
 
 
@@ -76,15 +76,10 @@ def create_pie_plot() -> dict[str, tuple[Figure, Axes]]:
 
 def plot_save_fig(plot_result: dict[str, tuple[Figure, Axes]]) -> None:
     """グラフ結果をpngファイルとして保存"""
-    result_path = get_outputs_path()
-
-    full_path = result_path / "pie_plot"
-
-    if not full_path.exists():
-        raise FileNotFoundError("pie_plotフォルダが存在しません")
-
+    result_path = FolderPath().get_plot_path("pie_plot")
+    
     for sheet_name, (fig, ax) in plot_result.items():
-        fig.savefig(f"{full_path}/{sheet_name}売上円グラフ.png", dpi=300)
+        fig.savefig(f"{result_path}/{sheet_name}売上円グラフ.png", dpi=300)
         print(f"作成しました：{sheet_name}売上円グラフ.png")
 
 

@@ -5,43 +5,7 @@ import win32com.client.gencache as win32
 from openpyxl.drawing.image import Image as XLImage
 from openpyxl.worksheet.worksheet import Worksheet  # 型ヒント記述用
 
-from src.common.plot_path import get_outputs_path
-
-
-# TODO: リファクタリング時に削除（パス指定専用pyファイルにてまとめる）
-def get_pdf_path() -> Path:
-    outputs_path = Path(__file__).resolve().parents[2] / "outputs"
-
-    if not outputs_path.exists():
-        raise FileNotFoundError("outputsフォルダが存在しません")
-
-    pdf_path = outputs_path / "pdf"
-
-    if not pdf_path.exists():
-        raise FileNotFoundError("pdfフォルダが存在しません")
-
-    return pdf_path
-
-
-# TODO: リファクタリング時に削除（パス指定専用pyファイルにてまとめる）
-def get_excel_path() -> list[Path]:
-    """加工済みExcelファイルのパス取得（複数対応可能）"""
-    data_path = Path(__file__).resolve().parents[2] / "data"
-
-    if not data_path.exists():
-        raise FileNotFoundError("dataフォルダが存在しません")
-
-    process_path = data_path / "processed"
-
-    if not process_path.exists():
-        raise FileNotFoundError("processedフォルダが存在しません")
-
-    process_excel_path = list(process_path.glob("*.xlsx"))
-
-    if not process_excel_path:
-        raise FileNotFoundError("加工済みExcelファイルが見つかりません")
-
-    return process_excel_path
+from src.common.path_general import FolderPath
 
 
 # TODO: エラーハンドリング実装（全ての処理）
@@ -76,10 +40,12 @@ def set_print_setup(ws: Worksheet) -> None:
 # TODO: エラーハンドリング実装（全ての処理）
 def plot_png_paste():
     """加工済みExcelファイル内にグラフ結果pngファイルを添付"""
-    excel_paths = get_excel_path()
+    folder_path = FolderPath()
 
-    pie_plot_path = get_outputs_path() / "pie_plot"
-    bar_plot_path = get_outputs_path() / "bar_plot"
+    excel_paths = folder_path.get_excel_path()
+
+    pie_plot_path = folder_path.get_plot_path("pie_plot")
+    bar_plot_path = folder_path.get_plot_path("bar_plot")
 
     # A4印刷可能領域に合わせた画像幅（px、余白19mm・96dpi換算の目安）
     IMAGE_WIDTH = 650
@@ -125,8 +91,10 @@ def plot_png_paste():
 # TODO: エラーハンドリング実装（全ての処理）
 def create_pdf() -> None:
     """加工済ExcelファイルをPDFとして出力"""
-    excel_paths = get_excel_path()
-    pdf_dir = get_pdf_path()
+    folder_path = FolderPath()
+
+    excel_paths = folder_path.get_excel_path()
+    pdf_dir = folder_path.get_pdf_path()
 
     excel = win32.EnsureDispatch("Excel.Application")
     excel.Visible = False
