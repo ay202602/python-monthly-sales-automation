@@ -3,11 +3,11 @@ from pathlib import Path
 # TODO: 処理完了後にprint文でログを残す設計を行う（どの関数が実行されたか分かるように設計）
 class FolderPath:
     def __init__(self) -> None:
-        self.folder_path = Path(__file__).resolve().parents[2]
+        self._folder_path = Path(__file__).resolve().parents[2]
 
     def get_data_path(self, data_folder: str = "data") -> Path:
         """データ関連フォルダパスの取得（存在しない場合場合は新規作成）"""
-        data_path = self.folder_path / data_folder
+        data_path = self._folder_path / data_folder
 
         if not data_path.exists():
             data_path.mkdir(parents=False, exist_ok=True)
@@ -45,7 +45,7 @@ class FolderPath:
 
     def get_outputs_path(self, outputs_folder: str = "outputs") -> Path:
         """出力フォルダパスの取得（存在しない場合は新規作成）"""
-        outputs_path = self.folder_path / outputs_folder
+        outputs_path = self._folder_path / outputs_folder
 
         if not outputs_path.exists():
             outputs_path.mkdir(parents=False, exist_ok=True)
