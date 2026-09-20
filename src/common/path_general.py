@@ -1,6 +1,6 @@
 from pathlib import Path
 
-# TODO: 処理完了後にprint文でログを残す設計を行う（どの関数が実行されたか分かるように設計）
+
 class FolderPath:
     def __init__(self) -> None:
         self._folder_path = Path(__file__).resolve().parents[2]
@@ -11,6 +11,7 @@ class FolderPath:
 
         if not data_path.exists():
             data_path.mkdir(parents=False, exist_ok=True)
+            print("データ格納フォルダを作成しました")
 
         return data_path
 
@@ -21,6 +22,7 @@ class FolderPath:
 
         if not raw_data_path.exists():
             raw_data_path.mkdir(parents=False, exist_ok=True)
+            print("加工前データ格納フォルダを作成しました")
 
         return raw_data_path
 
@@ -31,6 +33,7 @@ class FolderPath:
 
         if not processed_data_path.exists():
             processed_data_path.mkdir(parents=False, exist_ok=True)
+            print("加工済データ格納フォルダを作成しました")
 
         return processed_data_path
 
@@ -49,6 +52,7 @@ class FolderPath:
 
         if not outputs_path.exists():
             outputs_path.mkdir(parents=False, exist_ok=True)
+            print("出力フォルダを作成しました")
 
         return outputs_path
 
@@ -59,11 +63,13 @@ class FolderPath:
 
         if not plot_path.exists():
             plot_path.mkdir(parents=False, exist_ok=True)
+            print("グラフ結果の格納フォルダを作成しました")
 
         plot_type_path = plot_path / plot_type
 
         if not plot_type_path.exists():
             plot_type_path.mkdir(parents=False, exist_ok=True)
+            print(f"{plot_type}の格納フォルダを作成しました")
 
         return plot_type_path
 
@@ -73,5 +79,6 @@ class FolderPath:
 
         if not pdf_path.exists():
             pdf_path.mkdir(parents=False, exist_ok=True)
+            print("pdf格納フォルダを作成しました")
 
         return pdf_path
