@@ -7,3 +7,4 @@ class Columns(StrEnum):
     TOTAL_SALE = "合計金額"
     UNIT_PRICE = "単価"
     QUANTITY = "数量"
+    OTHERS = "その他"
