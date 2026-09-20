@@ -6,6 +6,7 @@ import pandas as pd
 from matplotlib.axes import Axes  # 型ヒント記述用
 from matplotlib.figure import Figure  # 型ヒント記述用
 
+from src.common.columns import Columns
 from src.common.data_process import pie_plot_data_process
 from src.common.path_general import FolderPath
 from src.common.plot_general import add_figure_border
@@ -26,8 +27,10 @@ def create_pie_plot() -> dict[str, tuple[Figure, Axes]]:
     for sheet_name, df in pie_result.items():
         fig, ax = plt.subplots()
         ax.pie(
-            df["合計金額"],
-            labels=df["商品名"].tolist(),  # labelsにdataframeを渡すため、リスト化
+            df[Columns.TOTAL_SALE],
+            labels=df[
+                Columns.PRODUCT_NAME
+            ].tolist(),  # labelsにdataframeを渡すため、リスト化
             autopct="%1.1f%%",
             startangle=90,
             counterclock=False,
