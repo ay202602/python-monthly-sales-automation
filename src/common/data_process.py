@@ -50,6 +50,25 @@ def data_process() -> dict[str, pd.DataFrame]:
         processed[sheet_name] = result[[Columns.CUSTOMER, Columns.PRODUCT_NAME, Columns.TOTAL_SALE]]  # type: ignore
 
     return processed
+
+
+def bar_plot_data_process() -> dict[str, pd.DataFrame]:
+    """棒グラフ用データ整形：取引先ごとに売り上げを集計"""
+    processed = data_process()
+    bar_result: dict[str, pd.DataFrame] = {}
+
+    # 取引先のみグルーピング、並び替え（data_process側の仕様とは異なる）
+    for sheet_name, df in processed.items():
+        plot_df = df.groupby(Columns.CUSTOMER, as_index=False)[
+            [Columns.TOTAL_SALE]
+        ].sum()
+        plot_df = plot_df.sort_values(by=Columns.CUSTOMER, ascending=False)
+        bar_result[sheet_name] = plot_df
+    
+    return bar_result
+
+
+# TODO: エラーハンドリング実装
 def pie_plot_data_process() -> dict[str, pd.DataFrame]:
     """円グラフ用データ整形：データが一定の数字以下の場合はその他のデータとしてまとめる"""
     processed = data_process()
