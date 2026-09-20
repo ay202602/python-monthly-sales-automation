@@ -1,8 +1,6 @@
 import sys
-from pathlib import Path
 
 import matplotlib.pyplot as plt
-import pandas as pd
 from matplotlib.axes import Axes  # 型ヒント記述用
 from matplotlib.figure import Figure  # 型ヒント記述用
 
