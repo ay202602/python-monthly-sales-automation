@@ -50,3 +50,37 @@ def data_process() -> dict[str, pd.DataFrame]:
         processed[sheet_name] = result[[Columns.CUSTOMER, Columns.PRODUCT_NAME, Columns.TOTAL_SALE]]  # type: ignore
 
     return processed
+def pie_plot_data_process() -> dict[str, pd.DataFrame]:
+    """円グラフ用データ整形：データが一定の数字以下の場合はその他のデータとしてまとめる"""
+    processed = data_process()
+
+    THRESHOLD = 0.06
+
+    # dict[シート名, DataFrame]
+    result: dict[str, pd.DataFrame] = {}
+
+    for sheet_name, df in processed.items():
+        df_grouped = df.groupby(Columns.PRODUCT_NAME, as_index=False)[Columns.TOTAL_SALE].sum()
+        df_grouped = df_grouped.sort_values(by=Columns.TOTAL_SALE, ascending=False)  # type: ignore
+
+        total = df_grouped[Columns.TOTAL_SALE].sum()
+        ratio = df_grouped[Columns.TOTAL_SALE] / total
+
+        # large = 閾値（しきいち）以上の割合の値
+        large = df_grouped[ratio >= THRESHOLD]
+
+        # small = 閾値（しきいち）未満の割合の値
+        small = df_grouped[ratio < THRESHOLD]
+
+        # small内のdfに1件、行がある場合「その他」のdfを作って結合
+        if not small.empty:
+            other_row = pd.DataFrame(
+                {Columns.PRODUCT_NAME: [Columns.OTHERS], Columns.TOTAL_SALE: [small[Columns.TOTAL_SALE].sum()]}
+            )
+            df_grouped = pd.concat([large, other_row], ignore_index=True)
+        else:
+            df_grouped = large
+
+        result[sheet_name] = df_grouped
+
+    return result

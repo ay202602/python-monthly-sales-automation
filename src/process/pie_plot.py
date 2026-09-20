@@ -6,50 +6,16 @@ import pandas as pd
 from matplotlib.axes import Axes  # 型ヒント記述用
 from matplotlib.figure import Figure  # 型ヒント記述用
 
+from src.common.data_process import pie_plot_data_process
 from src.common.path_general import FolderPath
 from src.common.plot_general import add_figure_border
-from src.process.data_process import data_process
 
-# TODO: エラーハンドリング実装
-def plot_data_process() -> dict[str, pd.DataFrame]:
-    processed = data_process()
-
-    THRESHOLD = 0.06
-
-    # dict[シート名, DataFrame]
-    result: dict[str, pd.DataFrame] = {}
-
-    for sheet_name, df in processed.items():
-        df_grouped = df.groupby("商品名", as_index=False)["合計金額"].sum()
-        df_grouped = df_grouped.sort_values(by="合計金額", ascending=False)  # type: ignore
-
-        total = df_grouped["合計金額"].sum()
-        ratio = df_grouped["合計金額"] / total
-
-        # large = 閾値以上の割合の値
-        large = df_grouped[ratio >= THRESHOLD]
-
-        # small = 閾値未満の割合の値
-        small = df_grouped[ratio < THRESHOLD]
-
-        # small内のdfに1件、行がある場合「その他」のdfを作って結合
-        if not small.empty:
-            other_row = pd.DataFrame(
-                {"商品名": ["その他"], "合計金額": [small["合計金額"].sum()]}
-            )
-            df_grouped = pd.concat([large, other_row], ignore_index=True)
-        else:
-            df_grouped = large
-
-        result[sheet_name] = df_grouped
-
-    return result
 
 # TODO: エラーハンドリング実装
 def create_pie_plot() -> dict[str, tuple[Figure, Axes]]:
     """円グラフ作成"""
     # data_process()側で空データをガード済みの前提で代入
-    result = plot_data_process()
+    pie_result = pie_plot_data_process()
 
     plot_result: dict[str, tuple[Figure, Axes]] = {}
 
@@ -57,7 +23,7 @@ def create_pie_plot() -> dict[str, tuple[Figure, Axes]]:
     plt.rcParams["font.family"] = "Meiryo"
     plt.rcParams["font.size"] = 12
 
-    for sheet_name, df in result.items():
+    for sheet_name, df in pie_result.items():
         fig, ax = plt.subplots()
         ax.pie(
             df["合計金額"],
