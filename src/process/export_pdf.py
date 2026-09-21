@@ -9,7 +9,7 @@ from src.common.path_general import FolderPath
 
 
 # TODO: エラーハンドリング実装（全ての処理）
-def resize_image(img: XLImage, target_width: int) -> None:
+def _resize_image(img: XLImage, target_width: int) -> None:
     """画像の縦横比を保ったまま幅を基準にリサイズ"""
     ratio = target_width / img.width
     img.width = target_width
@@ -17,7 +17,7 @@ def resize_image(img: XLImage, target_width: int) -> None:
 
 
 # TODO: エラーハンドリング実装（全ての処理）
-def set_print_setup(ws: Worksheet) -> None:
+def _set_print_setup(ws: Worksheet) -> None:
     """印刷設定（A4・縦向き・余白・1ページ納め）を統一"""
     # A4・縦向き・余白設定
     ws.page_setup.paperSize = ws.PAPERSIZE_A4
@@ -56,7 +56,7 @@ def plot_png_paste():
         # 既存シート名を基準にpngファイル名を組み立て
         data_ws = wb.worksheets[0]
         sheet_name = data_ws.title
-        set_print_setup(data_ws)
+        _set_print_setup(data_ws)
 
         pie_png_path = pie_plot_path / f"{sheet_name}売上円グラフ.png"
         bar_png_path = bar_plot_path / f"{sheet_name}売上棒グラフ.png"
@@ -73,13 +73,13 @@ def plot_png_paste():
             del wb[GRAPH]
 
         ws = wb.create_sheet(GRAPH)
-        set_print_setup(ws)
-        
+        _set_print_setup(ws)
+
         pie_img = XLImage(str(pie_png_path))
-        resize_image(pie_img, IMAGE_WIDTH)
+        _resize_image(pie_img, IMAGE_WIDTH)
 
         bar_img = XLImage(str(bar_png_path))
-        resize_image(bar_img, IMAGE_WIDTH)
+        _resize_image(bar_img, IMAGE_WIDTH)
 
         ws.add_image(pie_img, "A1")
         ws.add_image(bar_img, "A30")
