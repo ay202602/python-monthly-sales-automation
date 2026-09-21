@@ -72,7 +72,7 @@ def plot_save_fig(plot_result: dict[str, Axes]):
         fig = ax.get_figure()
         assert isinstance(fig, Figure)
         fig.savefig(f"{result_path}/{sheet_name}売上棒グラフ.png", dpi=300)
-        print(f"作成しました：{sheet_name}売上棒グラフ.png")
+        print(f"作成しました: {sheet_name}売上棒グラフ.png")
 
 
 def main() -> None:
@@ -80,10 +80,10 @@ def main() -> None:
         plot_result = create_bar_plot()
         plot_save_fig(plot_result)
     except (FileNotFoundError, ValueError, KeyError, RuntimeError) as e:
-        print(f"処理を中断しました。：{e}")
+        print(f"処理を中断しました: {e}")
         sys.exit(1)
     except Exception as e:
-        print(f"想定外のエラーが発生しました。：{e}")
+        print(f"想定外のエラーが発生しました: {e}")
         sys.exit(1)
     finally:
         print("処理を実行しました")

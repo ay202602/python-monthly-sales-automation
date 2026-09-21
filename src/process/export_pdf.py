@@ -60,9 +60,9 @@ def plot_png_paste():
         bar_png_path = bar_plot_path / f"{sheet_name}売上棒グラフ.png"
 
         if not pie_png_path.exists():
-            raise FileNotFoundError(f"円グラフpngが見つかりません：{pie_png_path}")
+            raise FileNotFoundError(f"円グラフpngが見つかりません: {pie_png_path}")
         if not bar_png_path.exists():
-            raise FileNotFoundError(f"棒グラフpngが見つかりません：{bar_png_path}")
+            raise FileNotFoundError(f"棒グラフpngが見つかりません: {bar_png_path}")
 
         # グラフ貼り付け用の新規ワークシート追加（既に存在している場合は上書き）
         GRAPH = "グラフ"
@@ -83,7 +83,7 @@ def plot_png_paste():
         ws.add_image(bar_img, "A30")
 
         wb.save(excel_path)
-        print(f"pngファイルを添付しました：{excel_path.name}")
+        print(f"pngファイルを添付しました: {excel_path.name}")
 
 
 def create_pdf() -> None:
@@ -103,7 +103,7 @@ def create_pdf() -> None:
                 wb.Worksheets.Select()  # 全シート選択
                 pdf_path = pdf_dir / f"{excel_path.stem}.pdf"
                 wb.ActiveSheet.ExportAsFixedFormat(0, str(pdf_path))
-                print(f"PDF出力しました：{pdf_path.name}")
+                print(f"PDF出力しました: {pdf_path.name}")
             finally:
                 wb.Close(SaveChanges=False)
     finally:

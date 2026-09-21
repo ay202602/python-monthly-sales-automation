@@ -103,7 +103,7 @@ def save_excel(workbooks: dict[str, px.Workbook]) -> None:
     for sheet_name, wb in workbooks.items():
         wb.save(processed_path / f"{sheet_name}売上データ.xlsx")
         print(
-            f"xlsxファイルの出力が完了しました。ファイル名：{sheet_name}売上データ.xlsx"
+            f"xlsxファイルの出力が完了しました ファイル名: {sheet_name}売上データ.xlsx"
         )
 
 
@@ -113,10 +113,10 @@ def main() -> None:
         workbooks = cell_decoration(processed)
         save_excel(workbooks)
     except (FileNotFoundError, ValueError, KeyError, RuntimeError) as e:
-        print(f"処理を中断しました。: {e}")
+        print(f"処理を中断しました: {e}")
         sys.exit(1)
     except Exception as e:
-        print(f"想定外のエラーが発生しました。: {e}")
+        print(f"想定外のエラーが発生しました: {e}")
         sys.exit(1)
     finally:
         print("処理を実行しました")

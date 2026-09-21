@@ -12,7 +12,7 @@ def _load_excel(raw_data: str) -> dict[str, pd.DataFrame]:
         df_dict = pd.read_excel(raw_data_path, sheet_name=None)
     except Exception as e:
         raise RuntimeError(
-            f"Excelファイルの読み込みに失敗しました。{raw_data_path}"
+            f"Excelファイルの読み込みに失敗しました: {raw_data_path}"
         ) from e
     else:
         print("Excelファイルの読み込みが完了しました")
