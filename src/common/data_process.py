@@ -4,7 +4,6 @@ from src.common.columns import Columns
 from src.common.path_general import FolderPath
 
 
-# TODO: エラーハンドリング実装できる箇所が無いか確認
 def _load_excel(raw_data: str) -> dict[str, pd.DataFrame]:
     """xlsxファイルの取得、パスが不正の場合は異常終了"""
     raw_data_path = FolderPath().get_raw_data_path() / raw_data
@@ -22,8 +21,13 @@ def _load_excel(raw_data: str) -> dict[str, pd.DataFrame]:
 
 def data_process() -> dict[str, pd.DataFrame]:
     """データを取引先ごとにグルーピング、売り上げを計算"""
+    raw_data = "monthly_sales_dummy_data.xlsx"
 
-    sheets_dict = _load_excel(raw_data="monthly_sales_dummy_data.xlsx")
+    try:
+        sheets_dict = _load_excel(raw_data=raw_data)
+    except RuntimeError:
+        print(f"{raw_data}が存在しません")
+        raise
 
     # dict[シート名, DataFrame(行・列を含むデータ全体)]
     processed: dict[str, pd.DataFrame] = {}
@@ -71,7 +75,6 @@ def bar_plot_data_process() -> dict[str, pd.DataFrame]:
     return bar_result
 
 
-# TODO: エラーハンドリング実装
 def pie_plot_data_process() -> dict[str, pd.DataFrame]:
     """円グラフ用データ整形：データが一定の数字以下の場合はその他のデータとしてまとめる"""
     processed = data_process()
@@ -86,6 +89,10 @@ def pie_plot_data_process() -> dict[str, pd.DataFrame]:
         df_grouped = df_grouped.sort_values(by=Columns.TOTAL_SALE, ascending=False)  # type: ignore
 
         total = df_grouped[Columns.TOTAL_SALE].sum()
+
+        if total == 0:
+            raise ValueError(f"{sheet_name}の合計金額が0のため、比率を計算できません")
+
         ratio = df_grouped[Columns.TOTAL_SALE] / total
 
         # large = 閾値（しきいち）以上の割合の値
