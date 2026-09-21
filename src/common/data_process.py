@@ -85,7 +85,9 @@ def pie_plot_data_process() -> dict[str, pd.DataFrame]:
     result: dict[str, pd.DataFrame] = {}
 
     for sheet_name, df in processed.items():
-        df_grouped = df.groupby(Columns.PRODUCT_NAME, as_index=False)[Columns.TOTAL_SALE].sum()
+        df_grouped = df.groupby(Columns.PRODUCT_NAME, as_index=False)[
+            Columns.TOTAL_SALE
+        ].sum()
         df_grouped = df_grouped.sort_values(by=Columns.TOTAL_SALE, ascending=False)  # type: ignore
 
         total = df_grouped[Columns.TOTAL_SALE].sum()
@@ -104,7 +106,10 @@ def pie_plot_data_process() -> dict[str, pd.DataFrame]:
         # small内のdfに1件、行がある場合「その他」のdfを作って結合
         if not small.empty:
             other_row = pd.DataFrame(
-                {Columns.PRODUCT_NAME: [Columns.OTHERS], Columns.TOTAL_SALE: [small[Columns.TOTAL_SALE].sum()]}
+                {
+                    Columns.PRODUCT_NAME: [Columns.OTHERS],
+                    Columns.TOTAL_SALE: [small[Columns.TOTAL_SALE].sum()],
+                }
             )
             df_grouped = pd.concat([large, other_row], ignore_index=True)
         else:
