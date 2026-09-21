@@ -16,16 +16,15 @@ from src.common.plot_general import add_figure_border
 # TODO: エラーハンドリング実装
 def create_bar_plot():
     """棒グラフ作成"""
-    # data_process()側で空データをガード済みの前提で代入
-    result = bar_plot_data_process()
+    # data_process.py側で空データをガード済みの前提で代入
+    data_result = bar_plot_data_process()
 
     plot_result: dict[str, Axes] = {}
 
     # font="Meiryo"は文字化け防止
     sns.set_theme(style="darkgrid", context="notebook", font="Meiryo")
 
-    for sheet_name, plot_df in result.items():
-
+    for sheet_name, plot_df in data_result.items():
         plt.figure(figsize=(10, 6))  # 幅・高さ
 
         ax = sns.barplot(
