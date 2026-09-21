@@ -9,7 +9,6 @@ from openpyxl.worksheet.worksheet import Worksheet  # 型ヒント記述用
 from src.common.path_general import FolderPath
 
 
-# TODO: エラーハンドリング実装（全ての処理）
 def _resize_image(img: XLImage, target_width: int) -> None:
     """画像の縦横比を保ったまま幅を基準にリサイズ"""
     ratio = target_width / img.width
@@ -17,7 +16,6 @@ def _resize_image(img: XLImage, target_width: int) -> None:
     img.height = int(img.height * ratio)
 
 
-# TODO: エラーハンドリング実装（全ての処理）
 def _set_print_setup(ws: Worksheet) -> None:
     """印刷設定（A4・縦向き・余白・1ページ納め）を統一"""
     # A4・縦向き・余白設定

@@ -10,7 +10,6 @@ from src.common.path_general import FolderPath
 from src.common.plot_general import add_figure_border
 
 
-# TODO: エラーハンドリング実装
 def create_pie_plot() -> dict[str, tuple[Figure, Axes]]:
     """円グラフ作成"""
     # data_process()側で空データをガード済みの前提で代入
