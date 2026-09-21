@@ -8,9 +8,10 @@ from matplotlib.figure import Figure
 from matplotlib.ticker import FuncFormatter
 
 from src.common.columns import Columns
+from src.common.data_process import bar_plot_data_process
 from src.common.path_general import FolderPath
 from src.common.plot_general import add_figure_border
-from src.common.data_process import bar_plot_data_process
+
 
 # TODO: エラーハンドリング実装
 def create_bar_plot():
