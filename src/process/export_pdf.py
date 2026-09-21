@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 import openpyxl as px
@@ -37,7 +38,6 @@ def _set_print_setup(ws: Worksheet) -> None:
     ws.print_options.horizontalCentered = True
 
 
-# TODO: エラーハンドリング実装（全ての処理）
 def plot_png_paste():
     """加工済みExcelファイル内にグラフ結果pngファイルを添付"""
     folder_path = FolderPath()
@@ -88,7 +88,6 @@ def plot_png_paste():
         print(f"pngファイルを添付しました：{excel_path.name}")
 
 
-# TODO: エラーハンドリング実装（全ての処理）
 def create_pdf() -> None:
     """加工済ExcelファイルをPDFとして出力"""
     folder_path = FolderPath()
@@ -114,8 +113,17 @@ def create_pdf() -> None:
 
 
 def main() -> None:
-    plot_png_paste()
-    create_pdf()
+    try:
+        plot_png_paste()
+        create_pdf()
+    except (FileNotFoundError, ValueError, KeyError, RuntimeError) as e:
+        print(f"処理を中断しました: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"想定外のエラーが発生しました: {e}")
+        sys.exit(1)
+    finally:
+        print("処理を実行しました")
 
 
 if __name__ == "__main__":
