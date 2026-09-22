@@ -39,7 +39,7 @@ def create_pie_plot() -> dict[str, tuple[Figure, Axes]]:
 
     return plot_result
 
-# TODO: エラーハンドリング実装
+
 def plot_save_fig(plot_result: dict[str, tuple[Figure, Axes]]) -> None:
     """グラフ結果をpngファイルとして保存"""
     result_path = FolderPath().get_plot_path("pie_plot")
