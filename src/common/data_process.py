@@ -49,6 +49,14 @@ def data_process() -> dict[str, pd.DataFrame]:
                 f"シート{sheet_name}に必要な列がありません: {missing_columns}"
             )
 
+        for col in (Columns.UNIT_PRICE, Columns.QUANTITY):
+            try:
+                df[col] = pd.to_numeric(df[col], errors="raise")
+            except ValueError as e:
+                raise ValueError(
+                    f"シート{sheet_name}の{col}列に数字以外の値が含まれています"
+                ) from e
+
         df[Columns.TOTAL_SALE] = df[Columns.UNIT_PRICE] * df[Columns.QUANTITY]
         result = df.groupby([Columns.CUSTOMER, Columns.PRODUCT_NAME], as_index=False)[
             Columns.TOTAL_SALE
@@ -71,7 +79,7 @@ def bar_plot_data_process() -> dict[str, pd.DataFrame]:
         ].sum()
         plot_df = plot_df.sort_values(by=Columns.CUSTOMER, ascending=False)
         bar_result[sheet_name] = plot_df
-    
+
     return bar_result
 
 
