@@ -1,6 +1,5 @@
 import sys
 import unicodedata
-from pathlib import Path
 
 import openpyxl as px
 import pandas as pd

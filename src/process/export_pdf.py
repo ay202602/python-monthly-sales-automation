@@ -1,5 +1,4 @@
 import sys
-from pathlib import Path
 
 import openpyxl as px
 import win32com.client.gencache as win32
