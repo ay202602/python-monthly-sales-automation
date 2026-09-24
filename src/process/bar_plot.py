@@ -34,7 +34,7 @@ def create_bar_plot():
 
         ax.set_title(f"{sheet_name}分売上データ")
         ax.set_xlabel("合計金額（千円）")
-        ax.set_ylabel("取引先".join("\n"))
+        ax.set_ylabel("\n".join("取引先"), rotation=0, labelpad=20)
 
         # バー先端がプロット領域からはみ出さないよう余白を確保
         ax.margins(x=0.2)
