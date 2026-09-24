@@ -7,7 +7,7 @@ from openpyxl.styles import Border, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.utils.dataframe import dataframe_to_rows
 
-from common.data_process import data_process
+from src.common.data_process import data_process
 from src.common.path_general import FolderPath
 
 
