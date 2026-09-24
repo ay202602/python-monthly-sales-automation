@@ -2,7 +2,7 @@ import sys
 import unicodedata
 
 import openpyxl as px
-import pandas as pd
+import pandas as pd  # 型ヒント記述用
 from openpyxl.styles import Border, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.utils.dataframe import dataframe_to_rows
