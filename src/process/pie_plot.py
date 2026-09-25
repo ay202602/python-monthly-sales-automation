@@ -59,7 +59,7 @@ def main() -> None:
     except Exception as e:
         print(f"想定外のエラーが発生しました: {e}")
     finally:
-        print("処理を実行しました")
+        print("処理を実行しました: pie_plot.py")
 
 
 if __name__ == "__main__":
