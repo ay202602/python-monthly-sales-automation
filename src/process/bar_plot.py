@@ -13,7 +13,7 @@ from src.common.path_general import FolderPath
 from src.common.plot_general import add_figure_border
 
 
-def create_bar_plot():
+def create_bar_plot() -> dict[str, Axes]:
     """棒グラフ作成"""
     # data_process.py側で空データをガード済みの前提で代入
     data_result = bar_plot_data_process()
@@ -64,7 +64,7 @@ def create_bar_plot():
     return plot_result
 
 
-def plot_save_fig(plot_result: dict[str, Axes]):
+def plot_save_fig(plot_result: dict[str, Axes]) -> None:
     """グラフ結果をpngとして保存"""
     result_path = FolderPath().get_plot_path("bar_plot")
     
