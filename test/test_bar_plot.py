@@ -11,7 +11,7 @@ from src.common.columns import Columns
 def close_all_figures():
     """テスト毎にmatplotlibの図を閉じる"""
     yield
-    plt.close("Agg")
+    plt.close("all")
 
 
 @pytest.fixture
