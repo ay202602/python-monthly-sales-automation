@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 import openpyxl as px
 import pytest
 from openpyxl.drawing.image import Image as XLImage
@@ -130,6 +132,7 @@ def excel_path_with_plots(tmp_path, monkeypatch):
         export_pdf,
         "FolderPath",
         lambda: FakeFolderPath(
+            # 複数Excelファイルを扱う処理にしているため、excel_pathsをリストとして渡す
             excel_paths=[excel_path], pie_dir=pie_dir, bar_dir=bar_dir
         ),
     )
@@ -202,6 +205,7 @@ def test_plot_png_paste_raises_when_pie_png_missing(tmp_path, monkeypatch):
         export_pdf,
         "FolderPath",
         lambda: FakeFolderPath(
+            # 複数Excelファイルを扱う処理にしているため、excel_pathsをリストとして渡す
             excel_paths=[excel_path], pie_dir=pie_dir, bar_dir=bar_dir
         ),
     )
@@ -241,6 +245,7 @@ def test_plot_png_paste_raises_when_bar_png_missing(tmp_path, monkeypatch):
         export_pdf,
         "FolderPath",
         lambda: FakeFolderPath(
+            # 複数Excelファイルを扱う処理にしているため、excel_pathsをリストとして渡す
             excel_paths=[excel_path], pie_dir=pie_dir, bar_dir=bar_dir
         ),
     )
@@ -250,49 +255,6 @@ def test_plot_png_paste_raises_when_bar_png_missing(tmp_path, monkeypatch):
 
 
 # ----- create_pdf -----
-
-
-class FakeWorkBook:
-    """Excel COMのWorkbookオブジェクトの代替"""
-
-    def __init__(self):
-        self.export_calls = []
-        self.closed_with = None
-        self.Worksheets = self  # Worksheets.Select()の後、ActiveSheetは自身を指す想定
-        self.ActiveSheet = self
-
-    def Select(self):
-        pass
-
-    def ExportAsFixedFormat(self, format_type, path):
-        self.export_calls.append((format_type, path))
-
-    def Close(self, SaveChanges):
-        self.closed_with = SaveChanges
-
-
-class FakeWorkBooks:
-    """Excel COMのWorkbooksコレクションの代替"""
-
-    def __init__(self, workbook_by_path):
-        self._workbook_by_path = workbook_by_path
-        self._opened_paths = []
-
-    def Open(self, path):
-        self._opened_paths.append(path)
-        return self._workbook_by_path[path]
-
-
-class FakeExcellApp:
-    """Excel COMのApplicationオブジェクトの代替"""
-
-    def __init__(self, workbooks):
-        self.Workbooks = workbooks
-        self.Visible = None
-        self.quit_called = False
-
-    def Quit(self):
-        self.quit_called = True
 
 
 class FakeFolderPathForPdf:
@@ -317,13 +279,16 @@ def test_create_pdf_exports_excel_as_pdf(tmp_path, monkeypatch):
     pdf_dir = tmp_path / "pdf"
     pdf_dir.mkdir()
 
-    fake_wb = FakeWorkBook()
-    fake_workbooks = FakeWorkBooks({str(excel_path): fake_wb})
-    fake_excel_app = FakeExcellApp(fake_workbooks)
+    # 本物のExcelアプリの代わりに、なんでも受け止めるダミーを用意
+    fake_excel_app = MagicMock()
+    fake_wb = fake_excel_app.Workbooks.Open.return_value
+    fake_wb.ActiveSheet = fake_wb  # Workbook.Select()後、ActiveSheet自身とみなす
 
+    # export_pdf.py内のFolderPathクラスを差し替え（元のpath_general.pyではない）
     monkeypatch.setattr(
         export_pdf,
         "FolderPath",
+        # 複数Excelファイルを扱う処理にしているため、excel_pathsをリストとして渡す
         lambda: FakeFolderPathForPdf(excel_paths=[excel_path], pdf_dir=pdf_dir),
     )
 
@@ -333,7 +298,11 @@ def test_create_pdf_exports_excel_as_pdf(tmp_path, monkeypatch):
 
     expected_pdf_path = str(pdf_dir / "Sheet1.pdf")
 
-    assert fake_wb.export_calls == [(0, expected_pdf_path)]
+    # 0 = pdf形式
+    # 加工済みExcelファイルがPDFとして出力されていること
+    fake_wb.ActiveSheet.ExportAsFixedFormat.assert_called_once_with(
+        0, expected_pdf_path
+    )
 
 
 def test_create_pdf_closes_workbook_without_saveing_and_quits_excel(
@@ -346,14 +315,15 @@ def test_create_pdf_closes_workbook_without_saveing_and_quits_excel(
     pdf_dir = tmp_path / "pdf"
     pdf_dir.mkdir()
 
-    fake_wb = FakeWorkBook()
-    fake_workbooks = FakeWorkBooks({str(excel_path): fake_wb})
-    fake_excel_app = FakeExcellApp(fake_workbooks)
+    fake_excel_app = MagicMock()
+    fake_wb = fake_excel_app.Workbooks.Open.return_value
+    fake_wb.ActiveSheet = fake_wb
 
     # export_pdf.py内のFolderPathクラスを差し替え（元のpath_general.pyではない）
     monkeypatch.setattr(
         export_pdf,
         "FolderPath",
+        # 複数Excelファイルを扱う処理にしているため、excel_pathsをリストとして渡す
         lambda: FakeFolderPathForPdf(excel_paths=[excel_path], pdf_dir=pdf_dir),
     )
 
@@ -362,5 +332,8 @@ def test_create_pdf_closes_workbook_without_saveing_and_quits_excel(
 
     export_pdf.create_pdf()
 
-    assert fake_wb.closed_with is False
-    assert fake_excel_app.quit_called is True
+    # 変更を保存せずにワークブックを閉じていること
+    fake_wb.Close.assert_called_once_with(SaveChanges=False)
+    
+    # Excelを終了していること
+    fake_excel_app.Quit.assert_called_once()
