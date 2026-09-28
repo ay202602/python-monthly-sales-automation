@@ -57,30 +57,36 @@
 ## ディレクトリ構成
 ```
 python-monthly-sales-automation
-├── data
+├── data  # Excelデータ格納
 │   ├── processed
-│   └── raw 
-├── outputs
+│   └── raw
+│
+├── outputs # 出力ファイル格納
 │   ├── pdf
 │   └── plot
-├── result
+│
+├── result  # README.md用画像ファイル格納
 │   ├── result_1.jpg
 │   └── result_2.jpg
-├── src
-│   ├── common
+│
+├── src # ソースコード格納
+│   ├── common  # 共通処理用コード格納
 │   │   ├── __init__.py
 │   │   ├── columns.py
 │   │   ├── data_process.py
 │   │   ├── path_general.py
 │   │   └── plot_general.py
-│   ├── process
+│   │
+│   ├── process # 本処理用コード格納
 │   │   ├── __init__.py
 │   │   ├── bar_plot.py
 │   │   ├── export_excel.py
 │   │   ├── export_pdf.py
 │   │   └── pie_plot.py
+│   │
 │   └── __init__.py
-├── test
+│
+├── test  # テスト用コード格納
 │   ├── __init__.py
 │   ├── conftest.py
 │   ├── test_bar_plot.py
@@ -88,8 +94,9 @@ python-monthly-sales-automation
 │   ├── test_export_excel.py
 │   ├── test_export_pdf.py
 │   └── test_pie_plot.py
+│
 ├── .gitignore
-├── main.py
+├── main.py # メインプログラム
 ├── README.md
 └── requirements.txt
 ```
