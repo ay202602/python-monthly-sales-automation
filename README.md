@@ -107,6 +107,8 @@ python-monthly-sales-automation
 ├── outputs # 出力ファイル格納
 │   ├── pdf
 │   └── plot
+│        ├── bar_plot
+│        └── pie_plot
 │
 ├── result  # README.md用画像ファイル格納
 │   ├── result_1.jpg
@@ -139,6 +141,7 @@ python-monthly-sales-automation
 │   └── test_pie_plot.py
 │
 ├── .gitignore
+├── CLAUDE.md
 ├── main.py # メインプログラム
 ├── README.md
 └── requirements.txt
