@@ -48,6 +48,9 @@ Excelの売上データを読み込み、以下のファイルを自動出力し
 > [!WARNING]
 > プロジェクト直下以外で実行すると`RuntimeError`になります。
 
+4. 出力を確認（data/processed・outputs/plot・outputs/pdf）
+
+
 | 区分 | ライブラリ | バージョン | 用途 |
 |:---|:---|:---|:---|
 | 言語 | python | 3.12.10 | ツール開発 |
