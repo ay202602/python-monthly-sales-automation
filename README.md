@@ -50,6 +50,10 @@ Excelの売上データを読み込み、以下のファイルを自動出力し
 
 4. 出力を確認（data/processed・outputs/plot・outputs/pdf）
 
+### テストの実行
+```powershell
+pytest
+```
 
 | 区分 | ライブラリ | バージョン | 用途 |
 |:---|:---|:---|:---|
