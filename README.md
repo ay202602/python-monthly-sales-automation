@@ -29,11 +29,27 @@ Excelの売上データを読み込み、以下のファイルを自動出力し
 
 
 ## 実行方法
-1. requirements.txt内のライブラリをインストール
-2. data/raw内に加工前のExcelファイル（拡張子はxlsx形式）をそのまま配置
-3. main.pyを当プロジェクト内のメインディレクトリ直下内に配置し実行（メインディレクトリ直下の外で実行するとエラーとなります）
-4. 実行時に各処理の完了通知と各ファイル・フォルダが出力されます
+**前提として、以下の環境が必要です。**
+- Windows / Microsoft Excel インストール済み / Python 3.12
 
+### 手順
+1. 下記のコマンドを実行し、ライブラリをインストール
+  ```
+  powershell pip install -r rqruirements.txt
+  ```
+  
+2. data/raw内に加工前のExcelファイル（.xlsx）を配置
+### 入力Excelの形式
+必須列：取引先 / 商品名 / 単価 / 数量 / 合計金額（列名は `Columns` クラスの定義）
+
+3. **プロジェクト直下**で実行
+  ```
+  powershell python main.py
+  ```
+4. 出力を確認（data/processed・outputs/plot・outputs/pdf）
+
+> [!WARNING]
+> プロジェクト直下以外で実行すると`RuntimeError`になります。
 
 ## 使用技術
 |区分|ライブラリ|バージョン|用途|
