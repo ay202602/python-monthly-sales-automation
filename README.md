@@ -34,17 +34,16 @@ Excelの売上データを読み込み、以下のファイルを自動出力し
 
 ### 手順
 1. 下記のコマンドを実行し、ライブラリをインストール
-  ```
-  powershell pip install -r rqruirements.txt
-  ```
-  
+   ```powershell
+   pip install -r requirements.txt
+   ```
+
 2. data/raw内に加工前のExcelファイル（.xlsx）を配置
 
 3. **プロジェクト直下**で実行
-  ```
-  powershell python main.py
-  ```
-4. 出力を確認（data/processed・outputs/plot・outputs/pdf）
+   ```powershell
+   python main.py
+   ```
 
 > [!WARNING]
 > プロジェクト直下以外で実行すると`RuntimeError`になります。
