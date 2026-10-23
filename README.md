@@ -68,6 +68,7 @@ pytest
 | グラフ描画② | seaborn | 0.13.2 | 棒グラフ出力 |
 | Excel処理 | openpyxl | 3.1.5 | 加工済みExcelファイルの装飾・グラフ画像添付 |
 | windowsのCOM操作 | pywin32 | 312 | 加工済みExcelファイルのPDF出力 |
+| 画像処理 | pillow | 12.3.0 | テスト用ダミー画像の生成（openpyxlの画像添付にも必要） |
 
 
 ## 設計意図
