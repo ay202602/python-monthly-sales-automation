@@ -1,12 +1,10 @@
-from unittest.mock import MagicMock
-
 import openpyxl as px
 import pytest
 from openpyxl.drawing.image import Image as XLImage
 from openpyxl.worksheet.worksheet import Worksheet
 from PIL import Image as PILImage
 
-import src.process.export_pdf as export_pdf
+import src.process.paste_plot as paste_plot
 
 
 def _make_png(path, width=1000, height=500):
@@ -25,7 +23,7 @@ def test_resize_image_keeps_aspect_ratio_and_sets_target_width(tmp_path):
     img = XLImage(str(png_path))
     original_ratio = img.height / img.width
 
-    export_pdf._resize_image(img, target_width=650)
+    paste_plot._resize_image(img, target_width=650)
 
     # A4印刷可能領域に合わせた画像幅であること
     assert img.width == 650
@@ -45,7 +43,7 @@ def test_set_print_setup_applies_expected_settings():
     # Pylance対策: Noneではないことを保証する
     assert ws is not None
 
-    export_pdf._set_print_setup(ws)
+    paste_plot._set_print_setup(ws)
 
     # 用紙サイズがA4サイズであること
     # openpyxlは代入時、paperSize定数(文字列)を内部でint型に変換して保持するため、intに変換して比較
@@ -127,13 +125,15 @@ def excel_path_with_plots(tmp_path, monkeypatch):
     _make_png(pie_dir / "Sheet1売上円グラフ.png")
     _make_png(bar_dir / "Sheet1売上棒グラフ.png")
 
-    # export_pdf.py内のFolderPathクラスを差し替え（元のpath_general.pyではない）
+    # paste_plot.py内のFolderPathクラスを差し替え（元のpath_general.pyではない）
     monkeypatch.setattr(
-        export_pdf,
+        paste_plot,
         "FolderPath",
         lambda: FakeFolderPath(
             # 複数Excelファイルを扱う処理にしているため、excel_pathsをリストとして渡す
-            excel_paths=[excel_path], pie_dir=pie_dir, bar_dir=bar_dir
+            excel_paths=[excel_path],
+            pie_dir=pie_dir,
+            bar_dir=bar_dir,
         ),
     )
 
@@ -142,7 +142,7 @@ def excel_path_with_plots(tmp_path, monkeypatch):
 
 def test_plot_png_paste_attaches_images_to_graph_sheet(excel_path_with_plots):
     """円グラフ・棒グラフpngが加工済みExcelファイルの「グラフ」シートに添付されていること"""
-    export_pdf.plot_png_paste()
+    paste_plot.plot_png_paste()
 
     wb = px.load_workbook(excel_path_with_plots)
 
@@ -159,7 +159,7 @@ def test_plot_png_paste_attaches_images_to_graph_sheet(excel_path_with_plots):
 
 def test_plot_png_paste_images_placed_at_expected_anchors(excel_path_with_plots):
     """画像がA1・A30セルを起点に配置されていること"""
-    export_pdf.plot_png_paste()
+    paste_plot.plot_png_paste()
 
     wb = px.load_workbook(excel_path_with_plots)
     ws = wb["グラフ"]
@@ -200,18 +200,20 @@ def test_plot_png_paste_raises_when_pie_png_missing(tmp_path, monkeypatch):
     # 棒グラフpngのみ用意し、円グラフpngは用意しない
     _make_png(bar_dir / "Sheet1売上棒グラフ.png")
 
-    # export_pdf.py内のFolderPathクラスを差し替え（元のpath_general.pyではない）
+    # paste_plot.py内のFolderPathクラスを差し替え（元のpath_general.pyではない）
     monkeypatch.setattr(
-        export_pdf,
+        paste_plot,
         "FolderPath",
         lambda: FakeFolderPath(
             # 複数Excelファイルを扱う処理にしているため、excel_pathsをリストとして渡す
-            excel_paths=[excel_path], pie_dir=pie_dir, bar_dir=bar_dir
+            excel_paths=[excel_path],
+            pie_dir=pie_dir,
+            bar_dir=bar_dir,
         ),
     )
 
     with pytest.raises(FileNotFoundError, match="円グラフpng"):
-        export_pdf.plot_png_paste()
+        paste_plot.plot_png_paste()
 
 
 def test_plot_png_paste_raises_when_bar_png_missing(tmp_path, monkeypatch):
@@ -240,100 +242,17 @@ def test_plot_png_paste_raises_when_bar_png_missing(tmp_path, monkeypatch):
     # 円グラフpngのみ用意し、棒グラフpngは用意しない
     _make_png(pie_dir / "Sheet1売上円グラフ.png")
 
-    # export_pdf.py内のFolderPathクラスを差し替え（元のpath_general.pyではない）
+    # paste_plot.py内のFolderPathクラスを差し替え（元のpath_general.pyではない）
     monkeypatch.setattr(
-        export_pdf,
+        paste_plot,
         "FolderPath",
         lambda: FakeFolderPath(
             # 複数Excelファイルを扱う処理にしているため、excel_pathsをリストとして渡す
-            excel_paths=[excel_path], pie_dir=pie_dir, bar_dir=bar_dir
+            excel_paths=[excel_path],
+            pie_dir=pie_dir,
+            bar_dir=bar_dir,
         ),
     )
 
     with pytest.raises(FileNotFoundError, match="棒グラフpng"):
-        export_pdf.plot_png_paste()
-
-
-# ----- create_pdf -----
-
-
-class FakeFolderPathForPdf:
-    """FolderPathの代替として、テスト用の一時フォルダを返す"""
-
-    def __init__(self, excel_paths, pdf_dir):
-        self._excel_paths = excel_paths
-        self._pdf_dir = pdf_dir
-
-    def get_excel_path(self):
-        return self._excel_paths
-
-    def get_pdf_path(self):
-        return self._pdf_dir
-
-
-def test_create_pdf_exports_excel_as_pdf(tmp_path, monkeypatch):
-    """加工済みExcelファイルがPDFとして出力されていること"""
-    excel_path = tmp_path / "Sheet1.xlsx"
-    excel_path.touch()
-
-    pdf_dir = tmp_path / "pdf"
-    pdf_dir.mkdir()
-
-    # 本物のExcelアプリの代わりに、なんでも受け止めるダミーを用意
-    fake_excel_app = MagicMock()
-    fake_wb = fake_excel_app.Workbooks.Open.return_value
-    fake_wb.ActiveSheet = fake_wb  # Workbook.Select()後、ActiveSheet自身とみなす
-
-    # export_pdf.py内のFolderPathクラスを差し替え（元のpath_general.pyではない）
-    monkeypatch.setattr(
-        export_pdf,
-        "FolderPath",
-        # 複数Excelファイルを扱う処理にしているため、excel_pathsをリストとして渡す
-        lambda: FakeFolderPathForPdf(excel_paths=[excel_path], pdf_dir=pdf_dir),
-    )
-
-    monkeypatch.setattr(export_pdf.win32, "EnsureDispatch", lambda name: fake_excel_app)
-
-    export_pdf.create_pdf()
-
-    expected_pdf_path = str(pdf_dir / "Sheet1.pdf")
-
-    # 0 = pdf形式
-    # 加工済みExcelファイルがPDFとして出力されていること
-    fake_wb.ActiveSheet.ExportAsFixedFormat.assert_called_once_with(
-        0, expected_pdf_path
-    )
-
-
-def test_create_pdf_closes_workbook_without_saveing_and_quits_excel(
-    tmp_path, monkeypatch
-):
-    """PDF出力後、変更を保存せずワークブックを閉じ、Excelを終了していること"""
-    excel_path = tmp_path / "Sheet1.xlsx"
-    excel_path.touch()
-
-    pdf_dir = tmp_path / "pdf"
-    pdf_dir.mkdir()
-
-    fake_excel_app = MagicMock()
-    fake_wb = fake_excel_app.Workbooks.Open.return_value
-    fake_wb.ActiveSheet = fake_wb
-
-    # export_pdf.py内のFolderPathクラスを差し替え（元のpath_general.pyではない）
-    monkeypatch.setattr(
-        export_pdf,
-        "FolderPath",
-        # 複数Excelファイルを扱う処理にしているため、excel_pathsをリストとして渡す
-        lambda: FakeFolderPathForPdf(excel_paths=[excel_path], pdf_dir=pdf_dir),
-    )
-
-    # export_pdf.py内のwin32.EnsureDispatch("Excel.Application")を差し替え
-    monkeypatch.setattr(export_pdf.win32, "EnsureDispatch", lambda name: fake_excel_app)
-
-    export_pdf.create_pdf()
-
-    # 変更を保存せずにワークブックを閉じていること
-    fake_wb.Close.assert_called_once_with(SaveChanges=False)
-    
-    # Excelを終了していること
-    fake_excel_app.Quit.assert_called_once()
+        paste_plot.plot_png_paste()
