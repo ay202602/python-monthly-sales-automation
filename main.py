@@ -2,7 +2,7 @@ import os
 
 import src.process.bar_plot as bar_plot
 import src.process.export_excel as export_excel
-import src.process.export_pdf as export_pdf
+import src.process.paste_plot as paste_plot
 import src.process.pie_plot as pie_plot
 
 
@@ -21,7 +21,7 @@ def main() -> None:
     export_excel.main()
     bar_plot.main()
     pie_plot.main()
-    export_pdf.main()
+    paste_plot.main()
 
 
 if __name__ == "__main__":

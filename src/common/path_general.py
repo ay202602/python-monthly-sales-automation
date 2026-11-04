@@ -72,13 +72,3 @@ class FolderPath:
             print(f"{plot_type}の格納フォルダを作成しました")
 
         return plot_type_path
-
-    def get_pdf_path(self, pdf_folder: str = "pdf") -> Path:
-        """pdfフォルダパスの取得（存在しない場合ば新規作成）"""
-        pdf_path = self.get_outputs_path() / pdf_folder
-
-        if not pdf_path.exists():
-            pdf_path.mkdir(parents=False, exist_ok=True)
-            print("pdf格納フォルダを作成しました")
-
-        return pdf_path

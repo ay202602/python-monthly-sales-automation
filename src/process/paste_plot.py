@@ -1,7 +1,6 @@
 import sys
 
 import openpyxl as px
-import win32com.client.gencache as win32
 from openpyxl.drawing.image import Image as XLImage
 from openpyxl.worksheet.worksheet import Worksheet  # 型ヒント記述用
 
@@ -85,34 +84,9 @@ def plot_png_paste():
         print(f"pngファイルを添付しました: {excel_path.name}")
 
 
-def create_pdf() -> None:
-    """加工済ExcelファイルをPDFとして出力"""
-    folder_path = FolderPath()
-
-    excel_paths = folder_path.get_excel_path()
-    pdf_dir = folder_path.get_pdf_path()
-
-    excel = win32.EnsureDispatch("Excel.Application")
-    excel.Visible = False
-
-    try:
-        for excel_path in excel_paths:
-            wb = excel.Workbooks.Open(str(excel_path))
-            try:
-                wb.Worksheets.Select()  # 全シート選択
-                pdf_path = pdf_dir / f"{excel_path.stem}.pdf"
-                wb.ActiveSheet.ExportAsFixedFormat(0, str(pdf_path))
-                print(f"PDF出力しました: {pdf_path.name}")
-            finally:
-                wb.Close(SaveChanges=False)
-    finally:
-        excel.Quit()
-
-
 def main() -> None:
     try:
         plot_png_paste()
-        create_pdf()
     except (FileNotFoundError, ValueError, KeyError, RuntimeError) as e:
         print(f"処理を中断しました: {e}")
         sys.exit(1)
@@ -120,7 +94,7 @@ def main() -> None:
         print(f"想定外のエラーが発生しました: {e}")
         sys.exit(1)
     finally:
-        print("処理を実行しました: export_pdf.py")
+        print("処理を実行しました: paste_pdf.py")
 
 
 if __name__ == "__main__":
