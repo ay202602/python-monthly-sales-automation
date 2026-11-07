@@ -21,7 +21,7 @@ Excelの売上データを月ごとに集計し、加工済みExcel・グラフ�
 - matplotlib は `test/conftest.py` で設定済み（GUI不要）
 
 ## git
-- 運用は GitHub Flow: `main` は常に動く状態を保ち、作業は `main` から切ったブラン　　チで行い、PR → 　確認 → `main` へマージする。`main` へ直接コミットしない
+- 運用は GitHub Flow: `main` は常に動く状態を保ち、作業は `main` から切ったブランチで行い、PR → 確認 → `main` へマージする。`main` へ直接コミットしない
 - ブランチ名: `<type>/<短い説明>`（例: `feat/add-monthly-summary`, `fix/pdf-export-error`）
 - コミットメッセージは Conventional Commits: `<type>(<scope>): <説明>`
   - type: `feat` / `fix` / `docs` / `refactor` / `test` / `chore` など（type・scope は英語、説明は日本語）
