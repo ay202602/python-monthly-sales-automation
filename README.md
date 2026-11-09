@@ -109,8 +109,9 @@ python-monthly-sales-automation
 │        └── pie_plot
 │
 ├── result  # README.md用画像ファイル格納
-│   ├── result_1.jpg
-│   └── result_2.jpg
+│   ├── result_1.png
+│   ├── result_2.png
+│   └── result_3.png
 │
 ├── src # ソースコード格納
 │   ├── common  # 共通処理用コード格納
