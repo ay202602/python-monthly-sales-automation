@@ -32,54 +32,6 @@ def test_resize_image_keeps_aspect_ratio_and_sets_target_width(tmp_path):
     assert img.height == pytest.approx(650 * original_ratio, abs=1)
 
 
-# ----- _set_print_setup -----
-
-
-def test_set_print_setup_applies_expected_settings():
-    """印刷設定（A4・縦向き・余白・1ページ納め・中央配置）が適用されていること"""
-    wb = px.Workbook()
-    ws = wb.active
-
-    # Pylance対策: Noneではないことを保証する
-    assert ws is not None
-
-    paste_plot._set_print_setup(ws)
-
-    # 用紙サイズがA4サイズであること
-    # openpyxlは代入時、paperSize定数(文字列)を内部でint型に変換して保持するため、intに変換して比較
-    assert ws.page_setup.paperSize == int(ws.PAPERSIZE_A4)
-
-    # 用紙の向きが縦向きであること
-    assert ws.page_setup.orientation == ws.ORIENTATION_PORTRAIT
-
-    # 上方向の余白が1.0であること
-    assert ws.page_margins.top == 1.0
-
-    # 下方向の余白が1.0であること
-    assert ws.page_margins.bottom == 1.0
-
-    # 右方向の余白が0.75であること
-    assert ws.page_margins.right == 0.75
-
-    # 左方向の余白が0.75であること
-    assert ws.page_margins.left == 0.75
-
-    # Pylance対策
-    assert ws.sheet_properties.pageSetUpPr is not None
-
-    # A4用紙1ページに収まっていること
-    assert ws.sheet_properties.pageSetUpPr.fitToPage is True
-
-    # 用紙の横部分が1ページに収められていること
-    assert ws.page_setup.fitToWidth == 1
-
-    # 用紙の縦部分が1ページを超えた場合に、次のページで表示されていること
-    assert ws.page_setup.fitToHeight == 0
-
-    # ページ中央が水平に設定されていること
-    assert ws.print_options.horizontalCentered is True
-
-
 # ----- plot_png_paste -----
 
 
@@ -120,6 +72,7 @@ def excel_path_with_plots(tmp_path, monkeypatch):
     assert ws is not None
 
     ws.title = "Sheet1"
+    ws.append(["取引先", "商品名", "合計金額"])  # 3列 → 画像はE列から貼られる想定
     wb.save(excel_path)
 
     _make_png(pie_dir / "Sheet1売上円グラフ.png")
@@ -140,15 +93,15 @@ def excel_path_with_plots(tmp_path, monkeypatch):
     return excel_path
 
 
-def test_plot_png_paste_attaches_images_to_graph_sheet(excel_path_with_plots):
-    """円グラフ・棒グラフpngが加工済みExcelファイルの「グラフ」シートに添付されていること"""
+def test_plot_png_paste_attaches_images_to_data_sheet(excel_path_with_plots):
+    """円グラフ・棒グラフpngが集計シートに添付されていること"""
     paste_plot.plot_png_paste()
 
     wb = px.load_workbook(excel_path_with_plots)
 
-    # workbook内に「グラフ」シートが存在していること
-    assert "グラフ" in wb.sheetnames
-    ws = wb["グラフ"]
+    # グラフ専用シートは作成されず、集計シートのみであること
+    assert wb.sheetnames == ["Sheet1"]
+    ws = wb["Sheet1"]
 
     # Pylance対策: wsのインスタンスがWorksheetであることを保証する
     assert isinstance(ws, Worksheet)
@@ -157,21 +110,40 @@ def test_plot_png_paste_attaches_images_to_graph_sheet(excel_path_with_plots):
     assert len(ws._images) == 2  # type: ignore[attr-defined]
 
 
-def test_plot_png_paste_images_placed_at_expected_anchors(excel_path_with_plots):
-    """画像がA1・A30セルを起点に配置されていること"""
+def test_plot_png_paste_images_placed_beside_data_columns(excel_path_with_plots):
+    """画像が集計データ（A〜C列）の右隣 = E列から、重ならず縦に並んで配置されていること"""
     paste_plot.plot_png_paste()
 
     wb = px.load_workbook(excel_path_with_plots)
-    ws = wb["グラフ"]
+    ws = wb["Sheet1"]
 
     # Pylance対策: wsのインスタンスがWorksheetであることを保証する
     assert isinstance(ws, Worksheet)
 
-    # アンカー行番号は0始まりのため、A1 = 0,  A30 = 29
-    anchor_rows = sorted(img.anchor._from.row for img in ws._images)  # type: ignore[attr-defined]
+    # アンカー行番号は0始まりのため、E列 = 4, 1行目 = 0
+    anchors = sorted((img.anchor._from.row, img.anchor._from.col) for img in ws._images)  # type: ignore[attr-defined]
 
-    # 画像がA1、A30セルを起点に配置されていること
-    assert anchor_rows == [0, 29]
+    # 全画像が集計データの右隣（E列）から配置されていること
+    assert all(col == 4 for _, col in anchors)
+
+    # 円グラフが1行目、棒グラフがその下に配置されていること
+    # 1つ目の[0] = 何番目の画像か   2つ目の[0] = タプルのどの値か
+    assert anchors[0][0] == 0  # 円グラフ: 1行目から配置
+    assert anchors[1][0] > 0  # 棒グラフ:　円グラフより下の行に配置
+
+
+def test_plot_png_paste_does_not_duplicate_images_on_rerun(excel_path_with_plots):
+    """2回実行しても画像が重複して増えないこと"""
+    paste_plot.plot_png_paste()
+    paste_plot.plot_png_paste()
+
+    wb = px.load_workbook(excel_path_with_plots)
+    ws = wb["Sheet1"]
+
+    # Pylance対策: wsのインスタンスがWorksheetであることを保証する
+    assert isinstance(ws, Worksheet)
+
+    assert len(ws._images) == 2  # type: ignore[attr-defined]
 
 
 def test_plot_png_paste_raises_when_pie_png_missing(tmp_path, monkeypatch):

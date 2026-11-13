@@ -1,10 +1,21 @@
+import math
 import sys
 
 import openpyxl as px
 from openpyxl.drawing.image import Image as XLImage
-from openpyxl.worksheet.worksheet import Worksheet  # 型ヒント記述用
+from openpyxl.utils import get_column_letter
 
 from src.common.path_general import FolderPath
+
+# 貼り付け時の画像幅（px）。棒グラフは取引先名・数値ラベルが読みやすいよう大きめにする
+PIE_IMAGE_WIDTH = 600
+BAR_IMAGE_WIDTH = 900
+
+COLUMN_GAP = 2  # 集計データと画像の間にあける列数
+ROW_GAP = 4  # 画像同士の間にあける行数
+
+# Excel標準の行の高さ（15pt = 20px)。画像が占める行数の算出に使用
+ROW_HEIGHT_PX = 20
 
 
 def _resize_image(img: XLImage, target_width: int) -> None:
@@ -12,26 +23,6 @@ def _resize_image(img: XLImage, target_width: int) -> None:
     ratio = target_width / img.width
     img.width = target_width
     img.height = int(img.height * ratio)
-
-
-def _set_print_setup(ws: Worksheet) -> None:
-    """印刷設定（A4・縦向き・余白・1ページ納め）を統一"""
-    # A4・縦向き・余白設定
-    ws.page_setup.paperSize = ws.PAPERSIZE_A4
-    ws.page_setup.orientation = ws.ORIENTATION_PORTRAIT
-    ws.page_margins.top = 1.0
-    ws.page_margins.bottom = 1.0
-    ws.page_margins.right = 0.75
-    ws.page_margins.left = 0.75
-
-    assert ws.sheet_properties.pageSetUpPr is not None
-    ws.sheet_properties.pageSetUpPr.fitToPage = True
-
-    # 横は1ページに納める、縦の場合は1ページを超える場合は次のページで表示
-    ws.page_setup.fitToWidth = 1
-    ws.page_setup.fitToHeight = 0  # 0 = 高さ制限なし
-
-    ws.print_options.horizontalCentered = True
 
 
 def plot_png_paste():
@@ -43,16 +34,12 @@ def plot_png_paste():
     pie_plot_path = folder_path.get_plot_path("pie_plot")
     bar_plot_path = folder_path.get_plot_path("bar_plot")
 
-    # A4印刷可能領域に合わせた画像幅（px、余白19mm・96dpi換算の目安）
-    IMAGE_WIDTH = 650
-
     for excel_path in excel_paths:
         wb = px.load_workbook(excel_path)
+        ws = wb.worksheets[0]
 
         # 既存シート名を基準にpngファイル名を組み立て
-        data_ws = wb.worksheets[0]
-        sheet_name = data_ws.title
-        _set_print_setup(data_ws)
+        sheet_name = ws.title
 
         pie_png_path = pie_plot_path / f"{sheet_name}売上円グラフ.png"
         bar_png_path = bar_plot_path / f"{sheet_name}売上棒グラフ.png"
@@ -62,23 +49,24 @@ def plot_png_paste():
         if not bar_png_path.exists():
             raise FileNotFoundError(f"棒グラフpngが見つかりません: {bar_png_path}")
 
-        # グラフ貼り付け用の新規ワークシート追加（既に存在している場合は上書き）
-        GRAPH = "グラフ"
-
-        if GRAPH in wb.sheetnames:
-            del wb[GRAPH]
-
-        ws = wb.create_sheet(GRAPH)
-        _set_print_setup(ws)
-
         pie_img = XLImage(str(pie_png_path))
-        _resize_image(pie_img, IMAGE_WIDTH)
+        _resize_image(img=pie_img, target_width=PIE_IMAGE_WIDTH)
 
         bar_img = XLImage(str(bar_png_path))
-        _resize_image(bar_img, IMAGE_WIDTH)
+        _resize_image(img=bar_img, target_width=BAR_IMAGE_WIDTH)
 
-        ws.add_image(pie_img, "A1")
-        ws.add_image(bar_img, "A30")
+        # 集計データの最終列の右隣（空きCOLUMN_GAP）を貼り付け開始列にする
+        anchor_col = get_column_letter(ws.max_column + COLUMN_GAP)
+
+        # 円グラフが占める行数を求め、その下に棒グラフを配置（小数切り上げ）
+        pie_rows = math.ceil(pie_img.height / ROW_HEIGHT_PX)
+        bar_row = 1 + pie_rows + ROW_GAP
+
+        # 再実行時に画像が重複しないよう既存画像をクリア
+        ws._images.clear()  # type: ignore[attr-defined]
+
+        ws.add_image(pie_img, f"{anchor_col}1")
+        ws.add_image(bar_img, f"{anchor_col}{bar_row}")
 
         wb.save(excel_path)
         print(f"pngファイルを添付しました: {excel_path.name}")
@@ -94,7 +82,7 @@ def main() -> None:
         print(f"想定外のエラーが発生しました: {e}")
         sys.exit(1)
     finally:
-        print("処理を実行しました: paste_pdf.py")
+        print("処理を実行しました: paste_plot.py")
 
 
 if __name__ == "__main__":
