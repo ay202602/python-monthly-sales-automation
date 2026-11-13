@@ -19,9 +19,14 @@ Excelの売上データを読み込み、以下のファイルを自動出力し
 
 ## 出力例
 ### 1月分の売上データの場合（ダミーデータです）
-| 1月売上データ | 1月売上グラフ |
-|:---:|:--:|
-|![売上データ](result/result_1.jpg)|![売上グラフ](result/result_2.jpg)|
+#### 1月売上データ（1~10行抜粋）
+![売上データ](result/result_1.png)
+
+#### 1月売上グラフ（円）
+![売上円グラフ](result/result_2.png)
+
+#### 1月売上グラフ（棒）
+![売上棒グラフ](result/result_3.png)
 
 
 ## 実行方法
@@ -104,8 +109,9 @@ python-monthly-sales-automation
 │        └── pie_plot
 │
 ├── result  # README.md用画像ファイル格納
-│   ├── result_1.jpg
-│   └── result_2.jpg
+│   ├── result_1.png
+│   ├── result_2.png
+│   └── result_3.png
 │
 ├── src # ソースコード格納
 │   ├── common  # 共通処理用コード格納
